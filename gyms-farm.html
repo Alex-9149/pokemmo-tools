@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PokeMMO Gym Farm Tracker</title>
+
+<style>
+  :root {
+    --bg: #111827;
+    --panel: #1f2937;
+    --panel2: #243244;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+    --done: #166534;
+    --border: #374151;
+    --danger: #dc2626;
+    --gold: #f59e0b;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
+  #reset {
+    background: var(--danger);
+    color: white;
+  }
+
+  #reset:hover {
+    filter: brightness(1.1);
+  }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .card .label {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .card .value {
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 4px;
+  }
+
+  .card .value.gold {
+    color: var(--gold);
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .tab {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .tab.active {
+    background: var(--accent);
+    color: #07111f;
+  }
+
+  .region {
+    display: none;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .region.active {
+    display: block;
+  }
+
+  .region-head {
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+    background: var(--panel2);
+  }
+
+  .region-head h2 {
+    margin: 0;
+  }
+
+  .progress {
+    color: var(--muted);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 13px 14px;
+    border-top: 1px solid var(--border);
+    text-align: left;
+  }
+
+  th {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  tr.done {
+    background: var(--done);
+  }
+
+  td.check {
+    width: 90px;
+    text-align: center;
+  }
+
+  input[type="checkbox"] {
+    width: 21px;
+    height: 21px;
+    cursor: pointer;
+    accent-color: #22c55e;
+  }
+
+  .city-es {
+    font-weight: 700;
+  }
+
+  .city-en {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+
+  .leader {
+    font-weight: 600;
+  }
+
+  .reward-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .reward-base {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .reward-amulet {
+    color: var(--gold);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+  }
+
+  .type-icon {
+    font-size: 14px;
+  }
+
+  /* COLORES DE TIPOS */
+  .type-normal { background: #6b7280; }
+  .type-fire { background: #dc2626; }
+  .type-water { background: #2563eb; }
+  .type-electric { background: #ca8a04; }
+  .type-grass { background: #16a34a; }
+  .type-ice { background: #0891b2; }
+  .type-fighting { background: #b91c1c; }
+  .type-poison { background: #9333ea; }
+  .type-ground { background: #a16207; }
+  .type-flying { background: #6366f1; }
+  .type-psychic { background: #db2777; }
+  .type-bug { background: #65a30d; }
+  .type-rock { background: #78716c; }
+  .type-ghost { background: #6d28d9; }
+  .type-dragon { background: #4f46e5; }
+  .type-dark { background: #374151; }
+  .type-steel { background: #64748b; }
+  .type-fairy { background: #db2777; }
+
+  .save-status {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 12px;
+  }
+
+  .danger-note {
+    color: #fca5a5;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 750px) {
+    body { padding: 12px; }
+    table { font-size: 13px; }
+    th, td { padding: 10px 8px; }
+    .city-en { font-size: 11px; }
+    .type-badge { padding: 4px 7px; font-size: 11px; }
+  }
+
+  @media (max-width: 600px) {
+    th:nth-child(1), td:nth-child(1) { display: none; }
+    th:nth-child(4), td:nth-child(4) { display: none; }
+    .region-head { padding: 14px; }
+    h1 { font-size: 23px; }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header>
+    <div>
+      <h1>🎮 PokeMMO — Gym Farm Tracker</h1>
+      <div class="subtitle">
+        Marca los gimnasios que ya has farmeado.
+        El estado se guarda automáticamente en este navegador.
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+      <a href="index.html" style="text-decoration: none; background: #374151; color: white; border-radius: 8px; padding: 10px 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">⮌ Inicio</a>
+      <a href="evs-farm.html" style="text-decoration: none; background: #2563eb; color: white; border-radius: 8px; padding: 10px 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">⚡ Farmeo EVs</a>
+      <button id="reset">↻ Reset — Borrar todos</button>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="card">
+      <div class="label">Gyms completados</div>
+      <div class="value" id="totalDone">0 / 42</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Pendientes</div>
+      <div class="value" id="totalPending">42</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Progreso total</div>
+      <div class="value" id="totalProgress">0%</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Ganado (Sin Amuleto)</div>
+      <div class="value" id="earnedBase">$0</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Ganado (Con Amuleto)</div>
+      <div class="value gold" id="earnedAmulet">$0</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div id="regions"></div>
+
+  <div class="save-status">
+    💾 Guardado automático: puedes cerrar el HTML y abrirlo de nuevo
+    sin perder las marcas en este mismo navegador.
+  </div>
+
+  <div class="danger-note">
+    ⚠️ Si borras los datos/localStorage del navegador, también se borrarán
+    las marcas guardadas.
+  </div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   DATOS DE LOS GIMNASIOS
+   [número, ciudad ES, ciudad EN, líder, tipo, recompensa Base ($)]
+   ========================================================= */
+
+const regions = {
+
+  "Kanto": [
+    ["1", "Ciudad Plateada", "Pewter City", "Brock", "Roca", 9000],
+    ["2", "Ciudad Celeste", "Cerulean City", "Misty", "Agua", 9000],
+    ["3", "Ciudad Carmín", "Vermilion City", "Lt. Surge", "Eléctrico", 9000],
+    ["4", "Ciudad Azulona", "Celadon City", "Erika", "Planta", 9000],
+    ["5", "Ciudad Fucsia", "Fuchsia City", "Koga", "Veneno", 9000],
+    ["6", "Ciudad Azafrán", "Saffron City", "Sabrina", "Psíquico", 9000],
+    ["7", "Isla Canela", "Cinnabar Island", "Blaine", "Fuego", 9000],
+    ["8", "Ciudad Verde", "Viridian City", "Giovanni", "Tierra", 9000]
+  ],
+
+  "Johto": [
+    ["1", "Ciudad Malva", "Violet City", "Falkner", "Volador", 9000],
+    ["2", "Pueblo Azalea", "Azalea Town", "Bugsy", "Bicho", 9000],
+    ["3", "Ciudad Trigal", "Goldenrod City", "Whitney", "Normal", 9000],
+    ["4", "Ciudad Iris", "Ecruteak City", "Morty", "Fantasma", 9000],
+    ["5", "Ciudad Orquídea", "Cianwood City", "Chuck", "Lucha", 9000],
+    ["6", "Ciudad Olivo", "Olivine City", "Jasmine", "Acero", 9000],
+    ["7", "Pueblo Caoba", "Mahogany Town", "Pryce", "Hielo", 9000],
+    ["8", "Ciudad Endrino", "Blackthorn City", "Clair", "Dragón", 9000]
+  ],
+
+  "Hoenn": [
+    ["1", "Ciudad Férrica", "Rustboro City", "Roxanne", "Roca", 9000],
+    ["2", "Pueblo Azuliza", "Dewford Town", "Brawly", "Lucha", 9000],
+    ["3", "Ciudad Malvalona", "Mauville City", "Wattson", "Eléctrico", 9000],
+    ["4", "Pueblo Lavacalda", "Lavaridge Town", "Flannery", "Fuego", 9000],
+    ["5", "Ciudad Petalia", "Petalburg City", "Norman", "Normal", 9000],
+    ["6", "Ciudad Arborada", "Fortree City", "Winona", "Volador", 9000],
+    ["7", "Ciudad Algaria", "Mossdeep City", "Tate & Liza", "Psíquico", 9000],
+    ["8", "Arrecípolis", "Sootopolis City", "Juan", "Agua", 9000]
+  ],
+
+  "Sinnoh": [
+    ["1", "Ciudad Pirita", "Oreburgh City", "Roark", "Roca", 9000],
+    ["2", "Ciudad Vetusta", "Eterna City", "Gardenia", "Planta", 9000],
+    ["3", "Ciudad Corazón", "Hearthome City", "Fantina", "Fantasma", 9000],
+    ["4", "Ciudad Rocavelo", "Veilstone City", "Maylene", "Lucha", 9000],
+    ["5", "Ciudad Pradera", "Pastoria City", "Crasher Wake", "Agua", 9000],
+    ["6", "Ciudad Canal", "Canalave City", "Byron", "Acero", 9000],
+    ["7", "Ciudad Puntaneva", "Snowpoint City", "Candice", "Hielo", 9000],
+    ["8", "Ciudad Marina", "Sunyshore City", "Volkner", "Eléctrico", 9000]
+  ],
+
+  "Unova": [
+    ["1", "Ciudad Gres (3 Líderes)", "Striaton City", "Chili, Cilan y Cress", "Fuego / Planta / Agua", 27000],
+    ["2", "Ciudad Esmalte", "Nacrene City", "Lenora", "Normal", 9000],
+    ["3", "Ciudad Porcelana", "Castelia City", "Burgh", "Bicho", 9000],
+    ["4", "Ciudad Mayólica", "Nimbasa City", "Elesa", "Eléctrico", 9000],
+    ["5", "Ciudad Fayenza", "Driftveil City", "Clay", "Tierra", 9000],
+    ["6", "Ciudad Loza", "Mistralton City", "Skyla", "Volador", 9000],
+    ["7", "Ciudad Teja", "Icirrus City", "Brycen", "Hielo", 9000],
+    ["8", "Ciudad Caolín", "Opelucid City", "Drayden / Iris", "Dragón", 9000]
+  ]
+
+};
+
+const typeIcons = {
+  "Normal": "⚪", "Fuego": "🔥", "Agua": "💧", "Eléctrico": "⚡",
+  "Planta": "🌿", "Hielo": "❄️", "Lucha": "🥊", "Veneno": "☠️",
+  "Tierra": "🌍", "Volador": "🪽", "Psíquico": "🔮", "Bicho": "🐛",
+  "Roca": "🪨", "Fantasma": "👻", "Dragón": "🐉", "Siniestro": "🌑",
+  "Acero": "⚙️", "Hada": "✨"
+};
+
+const typeClasses = {
+  "Normal": "type-normal", "Fuego": "type-fire", "Agua": "type-water",
+  "Eléctrico": "type-electric", "Planta": "type-grass", "Hielo": "type-ice",
+  "Lucha": "type-fighting", "Veneno": "type-poison", "Tierra": "type-ground",
+  "Volador": "type-flying", "Psíquico": "type-psychic", "Bicho": "type-bug",
+  "Roca": "type-rock", "Fantasma": "type-ghost", "Dragón": "type-dragon",
+  "Siniestro": "type-dark", "Acero": "type-steel", "Hada": "type-fairy"
+};
+
+const STORAGE_KEY = "pokemmo-gym-farm-v2";
+
+let state = JSON.parse(
+  localStorage.getItem(STORAGE_KEY) || "{}"
+);
+
+function formatMoney(amount) {
+  return "$" + amount.toLocaleString("es-ES");
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  updateSummary();
+  updateRegionProgress();
+}
+
+function updateSummary() {
+  let totalGyms = 0;
+  let doneGyms = 0;
+  let earnedBase = 0;
+  let earnedAmulet = 0;
+
+  Object.keys(regions).forEach(region => {
+    regions[region].forEach((gym, i) => {
+      totalGyms++;
+      const baseMoney = gym[5];
+      const amuletMoney = Math.round(baseMoney * 1.5);
+
+      if (state[`${region}-${i}`]) {
+        doneGyms++;
+        earnedBase += baseMoney;
+        earnedAmulet += amuletMoney;
+      }
+    });
+  });
+
+  document.getElementById("totalDone").textContent = `${doneGyms} / ${totalGyms}`;
+  document.getElementById("totalPending").textContent = totalGyms - doneGyms;
+  document.getElementById("totalProgress").textContent = `${Math.round((doneGyms / totalGyms) * 100)}%`;
+  document.getElementById("earnedBase").textContent = formatMoney(earnedBase);
+  document.getElementById("earnedAmulet").textContent = formatMoney(earnedAmulet);
+}
+
+function updateRegionProgress() {
+  for (const region of Object.keys(regions)) {
+    const done = regions[region].filter((_, i) => state[`${region}-${i}`]).length;
+    const el = document.querySelector(`[data-progress="${region}"]`);
+    if (el) {
+      el.textContent = `${done} / ${regions[region].length} completados`;
+    }
+  }
+}
+
+function createTypeBadge(type) {
+  const types = type.split(" / ");
+  return types.map(t => {
+    const cssClass = typeClasses[t] || "type-normal";
+    const icon = typeIcons[t] || "❔";
+    return `
+      <span class="type-badge ${cssClass}">
+        <span class="type-icon">${icon}</span>
+        ${t}
+      </span>
+    `;
+  }).join(" ");
+}
+
+function render() {
+  const tabs = document.getElementById("tabs");
+  const regionsEl = document.getElementById("regions");
+
+  Object.keys(regions).forEach((region, index) => {
+
+    /* TAB */
+    const tab = document.createElement("button");
+    tab.className = "tab" + (index === 0 ? " active" : "");
+    tab.textContent = region;
+    tab.dataset.region = region;
+
+    tab.onclick = () => {
+      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(".region").forEach(x => x.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById(`region-${region}`).classList.add("active");
+    };
+
+    tabs.appendChild(tab);
+
+    /* SECCIÓN */
+    const section = document.createElement("section");
+    section.className = "region" + (index === 0 ? " active" : "");
+    section.id = `region-${region}`;
+
+    section.innerHTML = `
+      <div class="region-head">
+        <h2>${region}</h2>
+        <div class="progress" data-progress="${region}"></div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ciudad / City</th>
+            <th>Líder / Leader</th>
+            <th>Tipo / Type</th>
+            <th>Recompensa</th>
+            <th class="check">Hecho</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    `;
+
+    const tbody = section.querySelector("tbody");
+
+    /* GIMNASIOS */
+    regions[region].forEach((gym, i) => {
+      const key = `${region}-${i}`;
+      const tr = document.createElement("tr");
+
+      if (state[key]) {
+        tr.classList.add("done");
+      }
+
+      const number = gym[0];
+      const cityES = gym[1];
+      const cityEN = gym[2];
+      const leader = gym[3];
+      const type = gym[4];
+      const baseReward = gym[5];
+      const amuletReward = Math.round(baseReward * 1.5);
+
+      tr.innerHTML = `
+        <td>${number}</td>
+        <td>
+          <div class="city-es">${cityES}</div>
+          <div class="city-en">${cityEN}</div>
+        </td>
+        <td><span class="leader">${leader}</span></td>
+        <td>${createTypeBadge(type)}</td>
+        <td>
+          <div class="reward-box">
+            <span class="reward-base">Sin: ${formatMoney(baseReward)}</span>
+            <span class="reward-amulet">Con: ${formatMoney(amuletReward)}</span>
+          </div>
+        </td>
+        <td class="check">
+          <input type="checkbox" ${state[key] ? "checked" : ""} aria-label="Marcar ${leader}">
+        </td>
+      `;
+
+      const checkbox = tr.querySelector("input");
+
+      checkbox.addEventListener("change", () => {
+        state[key] = checkbox.checked;
+        tr.classList.toggle("done", checkbox.checked);
+
+        if (!checkbox.checked) {
+          delete state[key];
+        }
+
+        save();
+      });
+
+      tbody.appendChild(tr);
+    });
+
+    regionsEl.appendChild(section);
+  });
+
+  updateSummary();
+  updateRegionProgress();
+}
+
+/* RESET */
+document.getElementById("reset").addEventListener("click", () => {
+  if (confirm("¿Seguro que quieres borrar TODOS los gimnasios marcados?")) {
+    state = {};
+    localStorage.removeItem(STORAGE_KEY);
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+      cb.closest("tr").classList.remove("done");
+    });
+
+    updateSummary();
+    updateRegionProgress();
+  }
+});
+
+/* INICIAR */
+render();
+
+</script>
+
+</body>
+</html>

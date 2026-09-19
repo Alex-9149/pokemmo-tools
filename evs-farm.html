@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guía interactiva de farmeo de EVs por hordas con Dulce Aroma en PokeMMO para Kanto, Johto, Hoenn, Sinnoh y Teselia con mapas y rotación de estaciones anuales y especiales">
+  <title>PokeMMO Hub - Farmeo de EVs, Hordas, Estaciones y Mapas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --panel: #161e31;
+      --panel-hover: #1e2942;
+      --panel-head: #1e2a47;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      
+      /* Stat Colors */
+      --hp-color: #10b981;
+      --atk-color: #ef4444;
+      --def-color: #3b82f6;
+      --spatk-color: #ec4899;
+      --spdef-color: #8b5cf6;
+      --spe-color: #f59e0b;
+
+      /* Season Colors */
+      --spring: #10b981;
+      --summer: #f59e0b;
+      --autumn: #f97316;
+      --winter: #06b6d4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(59, 130, 246, 0.12), transparent 40%),
+        radial-gradient(circle at 90% 85%, rgba(236, 72, 153, 0.1), transparent 45%);
+      background-attachment: fixed;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 15, 25, 0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #ef4444 50%, #f8fafc 50%);
+      border-radius: 50%;
+      border: 3px solid #1e293b;
+      position: relative;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: #0f172a;
+      border: 3px solid #f8fafc;
+      border-radius: 50%;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 5rem;
+      flex: 1;
+    }
+
+    /* Header */
+    .page-header {
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-header p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 850px;
+      line-height: 1.6;
+    }
+
+    /* Season Banner & Detector */
+    .season-banner {
+      background: linear-gradient(135deg, rgba(22, 30, 49, 0.9), rgba(30, 42, 71, 0.9));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .season-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .season-icon-large {
+      font-size: 2.4rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .season-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .season-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 3px;
+    }
+
+    .season-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(11, 15, 25, 0.6);
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .season-btn {
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .season-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .season-btn.active {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .season-btn[data-season="spring"].active { background: rgba(16, 185, 129, 0.25); border: 1px solid var(--spring); color: #6ee7b7; }
+    .season-btn[data-season="summer"].active { background: rgba(245, 158, 11, 0.25); border: 1px solid var(--summer); color: #fde047; }
+    .season-btn[data-season="autumn"].active { background: rgba(249, 115, 22, 0.25); border: 1px solid var(--autumn); color: #fdba74; }
+    .season-btn[data-season="winter"].active { background: rgba(6, 182, 212, 0.25); border: 1px solid var(--winter); color: #67e8f9; }
+
+    /* Tips & Helpers Banner */
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-bottom: 2rem;
+    }
+
+    .tip-card {
+      background: rgba(22, 30, 49, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.88rem;
+    }
+
+    .tip-card strong {
+      color: #fff;
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 2px;
+    }
+
+    .tip-icon {
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    /* Region Tabs */
+    .tabs-header {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn.active {
+      background: #3b82f6;
+      color: #fff;
+      border-color: #3b82f6;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+    }
+
+    /* MAP SECTION STYLES */
+    .map-section {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .map-header {
+      background: var(--panel-head);
+      padding: 1rem 1.4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .map-header-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .map-legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .map-svg-container {
+      position: relative;
+      width: 100%;
+      height: 380px;
+      background: #080d1a;
+      overflow: hidden;
+    }
+
+    .map-svg-container svg {
+      width: 100%;
+      height: 100%;
+      user-select: none;
+    }
+
+    .route-node {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .route-node:hover circle {
+      filter: drop-shadow(0 0 8px #60a5fa);
+      r: 10;
+    }
+
+    .route-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      fill: #ffffff;
+      pointer-events: none;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.9);
+    }
+
+    .map-footer-banner {
+      background: rgba(11, 15, 25, 0.7);
+      padding: 10px 1.4rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Filters Bar (Stats and Seasonal Views) */
+    .controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-right: 4px;
+      min-width: 110px;
+    }
+
+    .filter-pill {
+      background: rgba(22, 30, 49, 0.6);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-pill:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-pill.active {
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .filter-pill[data-stat="all"].active { background: #475569; }
+    .filter-pill[data-stat="hp"].active { background: var(--hp-color); }
+    .filter-pill[data-stat="atk"].active { background: var(--atk-color); }
+    .filter-pill[data-stat="def"].active { background: var(--def-color); }
+    .filter-pill[data-stat="spatk"].active { background: var(--spatk-color); }
+    .filter-pill[data-stat="spdef"].active { background: var(--spdef-color); }
+    .filter-pill[data-stat="spe"].active { background: var(--spe-color); }
+
+    /* Type of availability pill */
+    .avail-pill {
+      background: rgba(22, 30, 49, 0.6);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .avail-pill.active {
+      color: #fff;
+      background: #3b82f6;
+      border-color: #3b82f6;
+    }
+
+    /* EV Cards Grid */
+    .ev-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 1.3rem;
+    }
+
+    .ev-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.3rem;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ev-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+    }
+
+    .ev-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+    }
+
+    .ev-card.stat-hp::before { background: var(--hp-color); }
+    .ev-card.stat-atk::before { background: var(--atk-color); }
+    .ev-card.stat-def::before { background: var(--def-color); }
+    .ev-card.stat-spatk::before { background: var(--spatk-color); }
+    .ev-card.stat-spdef::before { background: var(--spdef-color); }
+    .ev-card.stat-spe::before { background: var(--spe-color); }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.9rem;
+    }
+
+    .stat-badge {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .badge-hp { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
+    .badge-atk { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .badge-def { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); }
+    .badge-spatk { background: rgba(236, 72, 153, 0.2); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.4); }
+    .badge-spdef { background: rgba(139, 92, 246, 0.2); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.4); }
+    .badge-spe { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+
+    .horde-yield {
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .sweet-scent-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 0.7rem;
+    }
+
+    .pokemon-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0.85rem;
+    }
+
+    .poke-avatar {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      border: 1px solid var(--border);
+    }
+
+    .poke-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .poke-count {
+      color: #93c5fd;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .location-box {
+      background: rgba(11, 15, 25, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 0.85rem;
+      font-size: 0.9rem;
+    }
+
+    .location-title {
+      font-weight: 700;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .method-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      margin-top: 4px;
+    }
+
+    /* Seasonal Badges */
+    .card-season-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    .season-all {
+      background: rgba(255, 255, 255, 0.06);
+      color: #94a3b8;
+    }
+
+    .season-spring-tag {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .season-summer-tag {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .season-autumn-tag {
+      background: rgba(249, 115, 22, 0.2);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .season-winter-tag {
+      background: rgba(6, 182, 212, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
+    .recommendation-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+      background: rgba(11, 15, 25, 0.95);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 1rem;
+      }
+      .ev-grid {
+        grid-template-columns: 1fr;
+      }
+      .season-banner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .map-svg-container {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon"></div>
+      <span class="brand-title">PokeMMO Tools</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Inicio</a></li>
+      <li><a href="gyms-farm.html" class="nav-link">Gimnasios</a></li>
+      <li><a href="evs-farm.html" class="nav-link active">Farmeo de EVs</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>⚡ Farmeo de EVs mediante Hordas (Dulce Aroma)</h1>
+      <p>
+        Lugares 100% efectivos de farmeo de EVs por hordas en <strong>Kanto, Johto, Hoenn, Sinnoh y Teselia</strong>.
+        Incluye tanto los <strong>spots de todo el año</strong> como las <strong>hordas especiales exclusivas de cada estación</strong> (Primavera, Verano, Otoño e Invierno).
+      </p>
+    </div>
+
+    <!-- Season Indicator and Simulator -->
+    <section class="season-banner">
+      <div class="season-info">
+        <div class="season-icon-large" id="seasonIcon">🌸</div>
+        <div>
+          <div class="season-title" id="seasonDisplayTitle">Estación en PokeMMO: Primavera</div>
+          <div class="season-desc" id="seasonDisplayDesc">Las estaciones en PokeMMO rotan mensualmente según el calendario real (Ene/May/Sep, Feb/Jun/Oct, etc.).</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 6px; font-weight: 600;">Simular estación en juego:</div>
+        <div class="season-selector">
+          <button class="season-btn active" data-season="spring" onclick="setSeason('spring')">🌸 Primavera (Ene/May/Sep)</button>
+          <button class="season-btn" data-season="summer" onclick="setSeason('summer')">☀️ Verano (Feb/Jun/Oct)</button>
+          <button class="season-btn" data-season="autumn" onclick="setSeason('autumn')">🍂 Otoño (Mar/Jul/Nov)</button>
+          <button class="season-btn" data-season="winter" onclick="setSeason('winter')">❄️ Invierno (Abr/Ago/Dic)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Tips -->
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon">🍯</div>
+        <div>
+          <strong>Hordas con Dulce Aroma</strong>
+          Spawnea hordas de 5 Pokémon al instante. Lleva Pokémon con Dulce Aroma (Smeargle, Oddish, Paras) y Bayas Zanama.
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🥋</div>
+        <div>
+          <strong>Brazal Firme (Macho Brace)</strong>
+          Duplica los EVs ganados (+2 EVs por Pokémon se transforman en +4, sumando hasta +20 EVs por cada horda).
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🗓️</div>
+        <div>
+          <strong>Especiales por Estación</strong>
+          Ciertas especies solo aparecen en horda durante meses concretos (ej. Beartic y Vanillite en Invierno, Sawsbuck en Primavera/Otoño).
+        </div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon">🗺️</div>
+        <div>
+          <strong>Mapa de Rutas Interactivo</strong>
+          Haz clic en cualquier nodo del mapa para filtrar de inmediato las hordas asociadas a esa ruta.
+        </div>
+      </div>
+    </div>
+
+    <!-- Region Tabs -->
+    <div class="tabs-header">
+      <button class="tab-btn active" data-region="kanto" onclick="switchRegion('kanto')">🔴 Kanto</button>
+      <button class="tab-btn" data-region="johto" onclick="switchRegion('johto')">🌙 Johto</button>
+      <button class="tab-btn" data-region="hoenn" onclick="switchRegion('hoenn')">🌊 Hoenn</button>
+      <button class="tab-btn" data-region="sinnoh" onclick="switchRegion('sinnoh')">❄️ Sinnoh</button>
+      <button class="tab-btn" data-region="unova" onclick="switchRegion('unova')">🏙️ Teselia (Unova)</button>
+    </div>
+
+    <!-- MAP SECTION -->
+    <section class="map-section">
+      <div class="map-header">
+        <div class="map-header-title">
+          <span id="mapRegionTitle">🗺️ Mapa de Rutas de Farmeo: Kanto</span>
+        </div>
+        <div class="map-legend">
+          <div class="legend-item"><span class="legend-dot" style="background: var(--hp-color)"></span> PS (HP)</div>
+          <div class="legend-item"><span class="legend-dot" style="background: var(--atk-color)"></span> Ataque</div>
+          <div class="legend-item"><span class="legend-dot" style="background: var(--def-color)"></span> Defensa</div>
+          <div class="legend-item"><span class="legend-dot" style="background: var(--spatk-color)"></span> Atq. Esp</div>
+          <div class="legend-item"><span class="legend-dot" style="background: var(--spdef-color)"></span> Def. Esp</div>
+          <div class="legend-item"><span class="legend-dot" style="background: var(--spe-color)"></span> Velocidad</div>
+        </div>
+      </div>
+      
+      <!-- Interactive SVG Vector Map -->
+      <div class="map-svg-container" id="mapContainer">
+        <!-- Generado dinámicamente -->
+      </div>
+
+      <div class="map-footer-banner">
+        <span>💡 <em>Consejo: Puedes hacer clic en los puntos del mapa para filtrar directamente el stat deseado.</em></span>
+        <span id="mapRoutesCount">6 rutas de hordas marcadas</span>
+      </div>
+    </section>
+
+    <!-- Controls & Filters Bar -->
+    <div class="controls-bar">
+      <!-- Stat Filters -->
+      <div class="filter-row">
+        <span class="filter-label">Filtrar por Stat:</span>
+        <button class="filter-pill active" data-stat="all" onclick="filterStat('all')">Todos los Stats</button>
+        <button class="filter-pill" data-stat="hp" onclick="filterStat('hp')">💚 PS (HP)</button>
+        <button class="filter-pill" data-stat="atk" onclick="filterStat('atk')">⚔️ Ataque</button>
+        <button class="filter-pill" data-stat="def" onclick="filterStat('def')">🛡️ Defensa</button>
+        <button class="filter-pill" data-stat="spatk" onclick="filterStat('spatk')">🔮 Atq. Especial</button>
+        <button class="filter-pill" data-stat="spdef" onclick="filterStat('spdef')">🔰 Def. Especial</button>
+        <button class="filter-pill" data-stat="spe" onclick="filterStat('spe')">⚡ Velocidad</button>
+      </div>
+
+      <!-- Season Availability View Filter -->
+      <div class="filter-row">
+        <span class="filter-label">Disponibilidad:</span>
+        <button class="avail-pill active" data-avail="all" onclick="filterAvail('all')">Ver Todos (Anuales + Especiales)</button>
+        <button class="avail-pill" data-avail="seasonal_only" onclick="filterAvail('seasonal_only')">✨ Solo Especiales de Estación</button>
+        <button class="avail-pill" data-avail="year_round" onclick="filterAvail('year_round')">🍃 Solo Todo el Año</button>
+      </div>
+    </div>
+
+    <!-- EV Cards Container -->
+    <div class="ev-grid" id="evGrid">
+      <!-- Generado dinámicamente con JavaScript -->
+    </div>
+
+  </main>
+
+  <footer>
+    PokeMMO Tools &copy; 2026 - Guía completa de Hordas Dulce Aroma con soporte para rotación de estaciones.
+  </footer>
+
+  <script>
+    // Configuración de Mapas vectoriales por región
+    const regionMapsData = {
+      kanto: {
+        name: "Kanto",
+        viewBox: "0 0 800 380",
+        paths: [
+          { d: "M 220,300 L 220,240 L 220,170 L 320,170 L 440,170 L 440,240 L 340,240 L 220,240", stroke: "#2a3754" },
+          { d: "M 320,170 L 320,90 L 440,90 L 580,90 L 580,180 L 440,180", stroke: "#2a3754" },
+          { d: "M 220,300 L 220,340 L 340,340 L 340,240", stroke: "#2a3754" },
+          { d: "M 670,120 L 720,240", stroke: "#1e293b", dash: true }
+        ],
+        cities: [
+          { x: 220, y: 300, name: "Pueblo Paleta" },
+          { x: 220, y: 240, name: "Cdad. Verde" },
+          { x: 220, y: 170, name: "Cdad. Plateada" },
+          { x: 440, y: 90, name: "Cdad. Celeste" },
+          { x: 440, y: 170, name: "Cdad. Azafrán" },
+          { x: 440, y: 240, name: "Cdad. Carmín" },
+          { x: 340, y: 170, name: "Cdad. Azulona" },
+          { x: 580, y: 180, name: "Pueblo Lavanda" },
+          { x: 340, y: 240, name: "Cdad. Fucsia" },
+          { x: 220, y: 340, name: "Isla Canela" },
+          { x: 700, y: 200, name: "Islas Sete" }
+        ],
+        nodes: [
+          { x: 220, y: 205, stat: "spe", label: "Ruta 1 / Bosque Verde", desc: "Horda Rattata / Caterpie", color: "var(--spe-color)" },
+          { x: 340, y: 90, stat: "atk", label: "Monte Moon", desc: "Horda Paras (Bajo techo)", color: "var(--atk-color)" },
+          { x: 580, y: 130, stat: "def", label: "Túnel Roca", desc: "Horda Geodude (Cueva)", color: "var(--def-color)" },
+          { x: 720, y: 170, stat: "spatk", label: "Cabo Extremo (Isla 2)", desc: "Horda Golduck (Surf)", color: "var(--spatk-color)" },
+          { x: 280, y: 340, stat: "spdef", label: "Ruta 21 (Sur)", desc: "Horda Tentacool (Surf)", color: "var(--spdef-color)" },
+          { x: 170, y: 240, stat: "spe", label: "Ruta 22 (Agua)", desc: "Horda Poliwag (Surf)", color: "var(--spe-color)" }
+        ]
+      },
+      johto: {
+        name: "Johto",
+        viewBox: "0 0 800 380",
+        paths: [
+          { d: "M 660,250 L 530,250 L 400,250 L 290,250 L 290,160 L 400,160 L 520,160 L 630,160 L 630,250", stroke: "#2a3754" },
+          { d: "M 290,250 L 180,250 L 180,310 L 290,310", stroke: "#2a3754" },
+          { d: "M 660,250 L 730,200", stroke: "#2a3754" }
+        ],
+        cities: [
+          { x: 660, y: 250, name: "Pueblo Primavera" },
+          { x: 530, y: 250, name: "Cdad. Cerezo" },
+          { x: 400, y: 250, name: "Pueblo Azalea" },
+          { x: 290, y: 250, name: "Cdad. Trigal" },
+          { x: 290, y: 160, name: "Cdad. Iris" },
+          { x: 400, y: 160, name: "Pueblo Caoba" },
+          { x: 520, y: 160, name: "Cdad. Endrino" },
+          { x: 180, y: 250, name: "Cdad. Olivo" },
+          { x: 180, y: 310, name: "Cdad. Orquídea" },
+          { x: 740, y: 200, name: "Monte Plateado" }
+        ],
+        nodes: [
+          { x: 460, y: 250, stat: "hp", label: "Cueva Unión / Ruinas Alfa", desc: "Horda Wooper (Surf)", color: "var(--hp-color)" },
+          { x: 710, y: 220, stat: "atk", label: "Monte Plateado / Ruta 28", desc: "Horda Ursaring / Primeape", color: "var(--atk-color)" },
+          { x: 350, y: 160, stat: "def", label: "Monte Mortero", desc: "Horda Graveler / Geodude", color: "var(--def-color)" },
+          { x: 400, y: 110, stat: "spatk", label: "Ruta 43 (Lago Furia)", desc: "Horda Girafarig", color: "var(--spatk-color)" },
+          { x: 230, y: 310, stat: "spdef", label: "Ruta 41 (Remolino)", desc: "Horda Tentacool / Cruel", color: "var(--spdef-color)" },
+          { x: 560, y: 140, stat: "spe", label: "Guarida Dragón", desc: "Horda Golbat (Surf bajo techo)", color: "var(--spe-color)" }
+        ]
+      },
+      hoenn: {
+        name: "Hoenn",
+        viewBox: "0 0 800 380",
+        paths: [
+          { d: "M 130,290 L 130,210 L 220,210 L 330,210 L 450,210 L 570,210 L 680,210", stroke: "#2a3754" },
+          { d: "M 330,210 L 330,130 L 220,130 L 220,80 L 330,80 L 450,80 L 450,140 L 450,210", stroke: "#2a3754" },
+          { d: "M 570,210 L 570,290 L 460,290", stroke: "#2a3754" }
+        ],
+        cities: [
+          { x: 130, y: 290, name: "Villa Raíz" },
+          { x: 130, y: 210, name: "Pueblo Escaso" },
+          { x: 220, y: 210, name: "Cdad. Petalia" },
+          { x: 330, y: 210, name: "Cdad. Férrica" },
+          { x: 450, y: 210, name: "Cdad. Malvalona" },
+          { x: 220, y: 80, name: "Pueblo Lavacalda" },
+          { x: 330, y: 80, name: "Pueblo Pardal" },
+          { x: 450, y: 80, name: "Cdad. Arborada" },
+          { x: 570, y: 210, name: "Cdad. Calagua" },
+          { x: 680, y: 210, name: "Cdad. Algaria" }
+        ],
+        nodes: [
+          { x: 270, y: 80, stat: "hp", label: "Ruta 114 (Cascada)", desc: "Horda Marill (¡TOP 1 PS!)", color: "var(--hp-color)" },
+          { x: 510, y: 230, stat: "atk", label: "Monte Pírico (Interior)", desc: "Horda Shuppet (Bajo techo)", color: "var(--atk-color)" },
+          { x: 390, y: 110, stat: "def", label: "Senda Ígnea", desc: "Horda Torkoal / Geodude", color: "var(--def-color)" },
+          { x: 330, y: 110, stat: "spatk", label: "Ruta 113 (Ceniza)", desc: "Horda Spinda", color: "var(--spatk-color)" },
+          { x: 490, y: 280, stat: "spdef", label: "Ruta 118 / Costa", desc: "Horda Tentacool / Wingull", color: "var(--spdef-color)" },
+          { x: 480, y: 200, stat: "spe", label: "Ruta 118 (Hierba)", desc: "Horda Linoone (+10 EVs)", color: "var(--spe-color)" }
+        ]
+      },
+      sinnoh: {
+        name: "Sinnoh",
+        viewBox: "0 0 800 380",
+        paths: [
+          { d: "M 150,300 L 240,300 L 240,220 L 360,220 L 480,220 L 480,300 L 360,300 L 240,300", stroke: "#2a3754" },
+          { d: "M 360,220 L 360,130 L 480,130 L 480,80 L 360,80 L 240,130", stroke: "#2a3754" },
+          { d: "M 480,220 L 600,220 L 700,160", stroke: "#2a3754" }
+        ],
+        cities: [
+          { x: 150, y: 300, name: "Pueblo Hojaverde" },
+          { x: 240, y: 300, name: "Pueblo Arena" },
+          { x: 240, y: 220, name: "Cdad. Jubileo" },
+          { x: 150, y: 220, name: "Cdad. Canal" },
+          { x: 360, y: 220, name: "Cdad. Corazón" },
+          { x: 480, y: 220, name: "Cdad. Rocavelo" },
+          { x: 480, y: 300, name: "Cdad. Pradera" },
+          { x: 360, y: 80, name: "Cdad. Puntaneva" },
+          { x: 600, y: 220, name: "Cdad. Marina" },
+          { x: 700, y: 160, name: "Liga Pokémon" }
+        ],
+        nodes: [
+          { x: 190, y: 220, stat: "hp", label: "Ruta 218 (Canal)", desc: "Horda Gastrodon (Surf)", color: "var(--hp-color)" },
+          { x: 680, y: 190, stat: "atk", label: "Calle Victoria (Cueva)", desc: "Horda Rhydon (¡TOP 1 Atq!)", color: "var(--atk-color)" },
+          { x: 110, y: 170, stat: "def", label: "Isla Hierro (Minas)", desc: "Horda Graveler / Steelix", color: "var(--def-color)" },
+          { x: 420, y: 240, stat: "spatk", label: "Ruta 214 / Lago Valor", desc: "Horda Golduck (Surf)", color: "var(--spatk-color)" },
+          { x: 650, y: 190, stat: "spdef", label: "Ruta 223 (Mar a Liga)", desc: "Horda Tentacruel", color: "var(--spdef-color)" },
+          { x: 530, y: 280, stat: "spe", label: "Ruta 213 (Playa)", desc: "Horda Floatzel", color: "var(--spe-color)" }
+        ]
+      },
+      unova: {
+        name: "Teselia (Unova)",
+        viewBox: "0 0 800 380",
+        paths: [
+          { d: "M 400,320 L 300,270 L 220,200 L 220,120 L 300,80 L 400,80 L 500,80 L 580,120 L 580,200 L 500,270 L 400,320", stroke: "#2a3754" },
+          { d: "M 300,80 L 300,140 L 400,160 L 500,140 L 500,80", stroke: "#2a3754" },
+          { d: "M 400,80 L 400,40", stroke: "#2a3754" }
+        ],
+        cities: [
+          { x: 400, y: 320, name: "Cdad. Porcelana" },
+          { x: 300, y: 270, name: "Pueblo Terracota" },
+          { x: 220, y: 200, name: "Cdad. Esmalte" },
+          { x: 220, y: 120, name: "Cdad. Fayenza" },
+          { x: 300, y: 80, name: "Cdad. Mayólica" },
+          { x: 400, y: 40, name: "Calle Victoria" },
+          { x: 500, y: 80, name: "Cdad. Teja" },
+          { x: 580, y: 120, name: "Cdad. Caolín" },
+          { x: 580, y: 200, name: "Pueblo Arenisca" },
+          { x: 500, y: 270, name: "Pueblo Puelche" }
+        ],
+        nodes: [
+          { x: 440, y: 60, stat: "hp", label: "Ruta 10 (Hierba Oscura)", desc: "Horda Amoonguss (10 EVs)", color: "var(--hp-color)" },
+          { x: 380, y: 60, stat: "atk", label: "Ruta 10 / Monte Tuerca", desc: "Horda Bouffalant / Beartic", color: "var(--atk-color)" },
+          { x: 400, y: 30, stat: "def", label: "Calle Victoria / Bahía", desc: "Horda Durant / Pelipper", color: "var(--def-color)" },
+          { x: 540, y: 210, stat: "spatk", label: "Ruta 11 / Teja", desc: "Horda Golduck / Vanillite", color: "var(--spatk-color)" },
+          { x: 610, y: 210, stat: "spdef", label: "Pueblo Arenisca (Mar)", desc: "Horda Mantine", color: "var(--spdef-color)" },
+          { x: 540, y: 260, stat: "spe", label: "Ruta 12 (Hierba Oscura)", desc: "Horda Rapidash (¡TOP 1 Vel!)", color: "var(--spe-color)" }
+        ]
+      }
+    };
+
+    // Base de datos de Spots de Farmeo mediante Hordas de Dulce Aroma (Todo el año + Especiales por estación)
+    const evSpots = [
+      // ================= KANTO =================
+      {
+        region: "kanto",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Caterpie / Metapod",
+        count: "Horda ×5",
+        evYield: "+5 / +10 EVs",
+        location: "Bosque Verde (Viridian Forest)",
+        method: "Dulce Aroma en hierba alta",
+        icon: "🐛",
+        season: "all",
+        recommended: false,
+        note: "Horda de 5 Caterpie/Metapod. Fácil de limpiar en niveles bajos para subir PS."
+      },
+      {
+        region: "kanto",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Paras",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Monte Moon (Planta baja)",
+        method: "Dulce Aroma bajo techo (inmune a lluvia)",
+        icon: "🍄",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Paras. Al estar bajo techo, Dulce Aroma nunca se bloquea por lluvia."
+      },
+      {
+        region: "kanto",
+        stat: "def",
+        statName: "Defensa",
+        pokemon: "Geodude",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Túnel Roca / Calle Victoria",
+        method: "Dulce Aroma en cueva interior",
+        icon: "🪨",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Geodude. Elimínalos al instante con Surf o Chispazo. Sin interrupciones por clima."
+      },
+      {
+        region: "kanto",
+        stat: "spatk",
+        statName: "Atq. Especial",
+        pokemon: "Golduck / Psyduck",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Cabo Extremo (Cape Brink - Isla 2)",
+        method: "Dulce Aroma usando Surf",
+        icon: "🦆",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Golduck. ¡Uno de los mejores spots del juego! Otorga +2 EVs por cada Golduck (+20 EVs con Brazal Firme)."
+      },
+      {
+        region: "kanto",
+        stat: "spdef",
+        statName: "Def. Especial",
+        pokemon: "Tentacool",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Ruta 21 / Sur de Pueblo Paleta",
+        method: "Dulce Aroma surfeando en agua",
+        icon: "🦑",
+        season: "all",
+        recommended: false,
+        note: "Horda de 5 Tentacool. Cuidado con barreras o lluvia en el canal exterior."
+      },
+      {
+        region: "kanto",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Poliwag",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Ruta 22 / Ruta 6 (Agua)",
+        method: "Dulce Aroma surfeando",
+        icon: "🌀",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Poliwag garantizados con Dulce Aroma. Límpialos rápidamente con Chispazo o Gigadrenado."
+      },
+      {
+        region: "kanto",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Rattata / Pidgey",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Ruta 1",
+        method: "Dulce Aroma en hierba",
+        icon: "🐀",
+        season: "all",
+        recommended: false,
+        note: "Horda de 5 Pokémon débiles. Perfecto para crías nivel 1 que aún no aguantan ataques fuertes."
+      },
+
+      // ================= JOHTO =================
+      {
+        region: "johto",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Wooper",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Cueva Unión (Piso inferior acuático)",
+        method: "Dulce Aroma surfeando bajo techo",
+        icon: "🐟",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Wooper dentro de la cueva. Al ser bajo techo nunca llueve y no interrumpe Dulce Aroma."
+      },
+      {
+        region: "johto",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Ursaring / Primeape",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 28 / Monte Plateado (Hierba)",
+        method: "Dulce Aroma en hierba alta",
+        icon: "🐻",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Ursaring. Nivel alto de endgame, otorga máxima experiencia y 10 EVs directos de Ataque."
+      },
+      {
+        region: "johto",
+        stat: "def",
+        statName: "Defensa",
+        pokemon: "Graveler / Geodude",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Monte Mortero (Mt. Mortar)",
+        method: "Dulce Aroma en cueva interior",
+        icon: "🗿",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Graveler. Cada uno da +2 EVs de Defensa (+20 EVs con Brazal Firme). Seguro y rápido."
+      },
+      {
+        region: "johto",
+        stat: "spatk",
+        statName: "Atq. Especial",
+        pokemon: "Girafarig",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 43 (Hierba hacia Lago de la Furia)",
+        method: "Dulce Aroma en hierba",
+        icon: "🦒",
+        season: "all",
+        recommended: false,
+        note: "Horda de 5 Girafarig (+2 Atq Esp c/u). Ten en cuenta que si llueve en el lago, Dulce Aroma fallará."
+      },
+      {
+        region: "johto",
+        stat: "spdef",
+        statName: "Def. Especial",
+        pokemon: "Tentacool / Tentacruel",
+        count: "Horda ×5",
+        evYield: "+5 a +10 EVs",
+        location: "Ruta 41 (Islas Remolino)",
+        method: "Dulce Aroma con Surf",
+        icon: "🌊",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 medusas marinas entre Ciudad Olivo y Orquídea. Limpieza rápida con Chispazo."
+      },
+      {
+        region: "johto",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Golbat / Zubat",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Guarida Dragón (Dragon's Den - Cueva)",
+        method: "Dulce Aroma surfeando en la cueva",
+        icon: "🦇",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Golbat (+2 EVs de velocidad por cada uno). Cueva protegida del clima exterior."
+      },
+
+      // ================= HOENN =================
+      {
+        region: "hoenn",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Marill",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 114 (Estanque / Cascada)",
+        method: "Dulce Aroma surfeando en agua dulce",
+        icon: "🐭",
+        season: "all",
+        recommended: true,
+        note: "¡El mejor spot de PS de TODO PokeMMO! 100% Marill (+2 EVs de PS cada uno = +20 EVs con Brazal Firme)."
+      },
+      {
+        region: "hoenn",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Shuppet",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Monte Pírico (Mt. Pyre - Pisos Interiores)",
+        method: "Dulce Aroma dentro del edificio",
+        icon: "👻",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Shuppet. Al ser un edificio cerrado nunca llueve. Evita llevar movimientos de tipo Normal/Lucha."
+      },
+      {
+        region: "hoenn",
+        stat: "def",
+        statName: "Defensa",
+        pokemon: "Torkoal / Geodude",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Senda Ígnea (Fiery Path)",
+        method: "Dulce Aroma en cueva central",
+        icon: "🐢",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Torkoal. Otorga +2 EVs de Defensa física por cada ejemplar. Límpialo con Surf o Terremoto."
+      },
+      {
+        region: "hoenn",
+        stat: "spatk",
+        statName: "Atq. Especial",
+        pokemon: "Spinda",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Ruta 113 (Ceniza volcánica)",
+        method: "Dulce Aroma en hierba de ceniza",
+        icon: "🐼",
+        season: "all",
+        recommended: false,
+        note: "Horda de 5 Spinda. Si tienes acceso a Kanto o Teselia, Golduck en Cabo Extremo es más veloz."
+      },
+      {
+        region: "hoenn",
+        stat: "spdef",
+        statName: "Def. Especial",
+        pokemon: "Tentacool / Wingull",
+        count: "Horda ×5",
+        evYield: "+5 EVs (+10 c/ Brazal)",
+        location: "Ruta 118 / Ruta 109",
+        method: "Dulce Aroma surfeando en la costa",
+        icon: "💧",
+        season: "all",
+        recommended: false,
+        note: "Horda de 5 criaturas marinas al cruzar en Surf al este de Malvalona."
+      },
+      {
+        region: "hoenn",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Linoone / Zigzagoon",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 118 (Hierba al este del río)",
+        method: "Dulce Aroma en hierba alta",
+        icon: "🦡",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Linoone. Otorga +2 EVs de velocidad por individuo (+20 EVs con Brazal Firme)."
+      },
+
+      // ================= SINNOH =================
+      {
+        region: "sinnoh",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Gastrodon / Shellos",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 218 / Canal de Ciudad Canal",
+        method: "Dulce Aroma surfeando en canal",
+        icon: "🐌",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Gastrodon (+2 EVs de PS cada uno). Son débiles x4 al tipo Planta para barrerlos en 1 segundo."
+      },
+      {
+        region: "sinnoh",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Rhydon / Bibarel",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Calle Victoria (Victory Road - Interior)",
+        method: "Dulce Aroma en cueva profunda",
+        icon: "🦏",
+        season: "all",
+        recommended: true,
+        note: "¡El mejor spot de Ataque de Sinnoh! Horda de 5 Rhydon (+2 EVs Atk c/u). Enorme cantidad de EXP."
+      },
+      {
+        region: "sinnoh",
+        stat: "def",
+        statName: "Defensa",
+        pokemon: "Graveler / Steelix",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Isla Hierro (Iron Island - Minas)",
+        method: "Dulce Aroma en cavernas mineras",
+        icon: "⛓️",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Graveler. Inmune al clima exterior. Límpialo con Surf o Terremoto."
+      },
+      {
+        region: "sinnoh",
+        stat: "spatk",
+        statName: "Atq. Especial",
+        pokemon: "Golduck / Psyduck",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 214 / Ruta 212 / Lago Valor",
+        method: "Dulce Aroma con Surf",
+        icon: "🦆",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Golduck acuáticos. Límpialos rápidamente con Chispazo o Energibola."
+      },
+      {
+        region: "sinnoh",
+        stat: "spdef",
+        statName: "Def. Especial",
+        pokemon: "Tentacruel",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 223 (Camino marítimo a la Liga)",
+        method: "Dulce Aroma con Surf en mar abierto",
+        icon: "🐙",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Tentacruel (+2 Def Especial por espécimen). Ideal antes de desafiar la Liga."
+      },
+      {
+        region: "sinnoh",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Floatzel",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 218 / Ruta 213 (Playa)",
+        method: "Dulce Aroma en hierba costera",
+        icon: "🦦",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Floatzel (+2 Velocidad c/u). 100% velocidad asegurada."
+      },
+
+      // ================= TESELIA / UNOVA (TODO EL AÑO + ESPECIALES POR ESTACIÓN) =================
+      // SPOTS ANUALES DE TESELIA
+      {
+        region: "unova",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Amoonguss / Foongus",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 10 / Ruta 11 (Hierba oscura)",
+        method: "Dulce Aroma en hierba doble/oscura",
+        icon: "🍄",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Amoonguss (+2 EVs de PS cada uno). Con Brazal Firme ganas +20 EVs por encuentro."
+      },
+      {
+        region: "unova",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Bouffalant / Tranquill",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 10 (Antes de Calle Victoria)",
+        method: "Dulce Aroma en hierba oscura",
+        icon: "🦬",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Bouffalant. El spot predilecto de la comunidad de PokeMMO para maxear Ataque en Teselia."
+      },
+      {
+        region: "unova",
+        stat: "def",
+        statName: "Defensa",
+        pokemon: "Durant",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Calle Victoria (Salas exteriores y cuevas)",
+        method: "Dulce Aroma en cueva",
+        icon: "🐜",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Durant (+2 EVs de Defensa c/u). Débiles x4 a Fuego (Onda Ígnea o Lanzallamas los barre al instante)."
+      },
+      {
+        region: "unova",
+        stat: "def",
+        statName: "Defensa",
+        pokemon: "Pelipper",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Bahía Arenisca (Undella Bay)",
+        method: "Dulce Aroma con Surf",
+        icon: "🦆",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Pelipper en el mar de Arenisca. En verano la playa se llena de entrenadores, pero el agua se mantiene constante."
+      },
+      {
+        region: "unova",
+        stat: "spatk",
+        statName: "Atq. Especial",
+        pokemon: "Golduck",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 11 / Ruta 14",
+        method: "Dulce Aroma con Surf en agua dulce",
+        icon: "🦆",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Golduck (+2 EVs Atq Especial c/u). Spot universal altamente recomendado."
+      },
+      {
+        region: "unova",
+        stat: "spdef",
+        statName: "Def. Especial",
+        pokemon: "Mantine",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Pueblo Arenisca (Undella Town - Mar)",
+        method: "Dulce Aroma con Surf en mar",
+        icon: "🪁",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Mantine (+2 EVs Def Especial cada uno = +20 EVs con Brazal Firme)."
+      },
+      {
+        region: "unova",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Rapidash",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 12 (Cerca de Pueblo Puelche)",
+        method: "Dulce Aroma en hierba oscura",
+        icon: "🦄",
+        season: "all",
+        recommended: true,
+        note: "¡El mejor spot de velocidad de todo PokeMMO! Horda de 5 Rapidash (+2 EVs de velocidad c/u). Rápido y seguro."
+      },
+      {
+        region: "unova",
+        stat: "spe",
+        statName: "Velocidad",
+        pokemon: "Basculin",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 3 / Ciudad Gres (Estanque)",
+        method: "Dulce Aroma surfeando",
+        icon: "🐟",
+        season: "all",
+        recommended: true,
+        note: "Horda de 5 Basculin (+2 EVs velocidad cada uno). Accesible desde el comienzo del juego sin requisitos avanzados."
+      },
+
+      // ================= ESPECIALES DE ESTACIÓN (TESELIA) =================
+      // ❄️ INVIERNO (Winter)
+      {
+        region: "unova",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Beartic / Cubchoo",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Monte Tuerca (Twist Mountain) / Ruta 7",
+        method: "Dulce Aroma en laderas con nieve profunda",
+        icon: "🐻‍❄️",
+        season: "winter",
+        recommended: true,
+        note: "❄️ EXCLUSIVO DE INVIERNO: La nieve acumula ventisqueros que desbloquean accesos a hordas de 5 Beartic (+2 EVs de Ataque físico cada uno = +20 EVs con Brazal)."
+      },
+      {
+        region: "unova",
+        stat: "spatk",
+        statName: "Atq. Especial",
+        pokemon: "Vanillite / Vanillish",
+        count: "Horda ×5",
+        evYield: "+5 a +10 EVs",
+        location: "Ciudad Teja (Icirrus City) / Monte Tuerca",
+        method: "Dulce Aroma en zonas heladas de la ciudad",
+        icon: "🍦",
+        season: "winter",
+        recommended: false,
+        note: "❄️ EXCLUSIVO DE INVIERNO: En invierno la ciudad se congela por completo, habilitando hordas de helados Vanillite que dan Ataque Especial."
+      },
+      {
+        region: "unova",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Sawsbuck (Forma Invierno)",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 6 / Ruta 7 (Hierba nevada)",
+        method: "Dulce Aroma en hierba de invierno",
+        icon: "🦌",
+        season: "winter",
+        recommended: false,
+        note: "❄️ EXCLUSIVO DE INVIERNO: Forma con pelaje blanco y patas esponjosas de nieve. Horda de 5 Sawsbuck (+2 Atk c/u)."
+      },
+
+      // 🌸 PRIMAVERA (Spring)
+      {
+        region: "unova",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Sawsbuck (Forma Primavera)",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 6 / Ruta 7 (Hierba florecida)",
+        method: "Dulce Aroma en hierba",
+        icon: "🌸",
+        season: "spring",
+        recommended: false,
+        note: "🌸 EXCLUSIVO DE PRIMAVERA: Forma con cuernos florecidos en rosa. Horda de 5 Deerling/Sawsbuck (+2 Atk c/u)."
+      },
+      {
+        region: "unova",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Stunfisk / Palpitoad",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 8 / Pantano de Ciudad Teja",
+        method: "Dulce Aroma en charcos y lodo",
+        icon: "🥞",
+        season: "spring",
+        recommended: false,
+        note: "🌸 ACTIVO EN PRIMAVERA: El pantano se llena de agua y charcos de barro. Hordas de 5 Stunfisk (+2 PS c/u). (Se congela en invierno)."
+      },
+
+      // ☀️ VERANO (Summer)
+      {
+        region: "unova",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Sawsbuck (Forma Verano)",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 6 / Ruta 7 (Hierba frondosa)",
+        method: "Dulce Aroma en hierba",
+        icon: "🌿",
+        season: "summer",
+        recommended: false,
+        note: "☀️ EXCLUSIVO DE VERANO: Forma con cuernos cubiertos de hojas verdes brillantes. Horda de 5 Sawsbuck (+2 Atk c/u)."
+      },
+      {
+        region: "unova",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Stunfisk / Palpitoad",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 8 / Pantano de Ciudad Teja",
+        method: "Dulce Aroma en charcos de verano",
+        icon: "🥞",
+        season: "summer",
+        recommended: false,
+        note: "☀️ ACTIVO EN VERANO: Hordas de 5 Stunfisk y Palpitoad en los pantanos activos de Teja."
+      },
+
+      // 🍂 OTOÑO (Autumn)
+      {
+        region: "unova",
+        stat: "atk",
+        statName: "Ataque",
+        pokemon: "Sawsbuck (Forma Otoño)",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 6 / Ruta 7 (Hojas caídas)",
+        method: "Dulce Aroma en hierba seca",
+        icon: "🍂",
+        season: "autumn",
+        recommended: false,
+        note: "🍂 EXCLUSIVO DE OTOÑO: Forma con cuernos de hojas rojizas y ocres de otoño. Horda de 5 Sawsbuck (+2 Atk c/u)."
+      },
+      {
+        region: "unova",
+        stat: "hp",
+        statName: "PS (HP)",
+        pokemon: "Stunfisk / Palpitoad",
+        count: "Horda ×5",
+        evYield: "+10 EVs (+20 c/ Brazal)",
+        location: "Ruta 8 / Pantano de Ciudad Teja",
+        method: "Dulce Aroma en charcos de otoño",
+        icon: "🥞",
+        season: "autumn",
+        recommended: false,
+        note: "🍂 ACTIVO EN OTOÑO: El pantano aún contiene agua antes de la helada invernal."
+      }
+    ];
+
+    let currentRegion = "kanto";
+    let currentStat = "all";
+    let currentAvail = "all"; // 'all', 'seasonal_only', 'year_round'
+    let simulatedSeason = "spring";
+
+    // Detectar estación real de PokeMMO según el mes del mundo real
+    function getRealPokeMMOSeason() {
+      const month = new Date().getMonth(); // 0 a 11
+      // Ene(0), May(4), Sep(8) -> Primavera
+      if (month === 0 || month === 4 || month === 8) return "spring";
+      // Feb(1), Jun(5), Oct(9) -> Verano
+      if (month === 1 || month === 5 || month === 9) return "summer";
+      // Mar(2), Jul(6), Nov(10) -> Otoño
+      if (month === 2 || month === 6 || month === 10) return "autumn";
+      // Abr(3), Ago(7), Dic(11) -> Invierno
+      return "winter";
+    }
+
+    const seasonNames = {
+      spring: { title: "Primavera (Spring)", icon: "🌸", desc: "Meses: Enero, Mayo, Septiembre. Florecimiento en rutas y acceso despejado a caminos de montaña." },
+      summer: { title: "Verano (Summer)", icon: "☀️", desc: "Meses: Febrero, Junio, Octubre. Días largos y alta actividad en costas y zonas marítimas como Bahía Arenisca." },
+      autumn: { title: "Otoño (Autumn)", icon: "🍂", desc: "Meses: Marzo, Julio, Noviembre. Hojas caídas y vientos en Teselia; aparición activa de hordas estacionales." },
+      winter: { title: "Invierno (Winter)", icon: "❄️", desc: "Meses: Abril, Agosto, Diciembre. Nieve profunda en Teja, Monte Tuerca y Ruta 7. Aparición de Beartic/Vanillite y accesos por ventisqueros." }
+    };
+
+    function setSeason(season) {
+      simulatedSeason = season;
+      
+      document.querySelectorAll(".season-btn").forEach(btn => {
+        if (btn.dataset.season === season) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+
+      const s = seasonNames[season];
+      document.getElementById("seasonIcon").innerText = s.icon;
+      document.getElementById("seasonDisplayTitle").innerText = `Estación Seleccionada: ${s.title}`;
+      document.getElementById("seasonDisplayDesc").innerText = s.desc;
+
+      renderGrid();
+      renderMap();
+    }
+
+    function switchRegion(region) {
+      currentRegion = region;
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        if (btn.dataset.region === region) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+      renderMap();
+      renderGrid();
+    }
+
+    function filterStat(stat) {
+      currentStat = stat;
+      document.querySelectorAll(".filter-pill").forEach(pill => {
+        if (pill.dataset.stat === stat) {
+          pill.classList.add("active");
+        } else {
+          pill.classList.remove("active");
+        }
+      });
+      renderMap();
+      renderGrid();
+    }
+
+    function filterAvail(avail) {
+      currentAvail = avail;
+      document.querySelectorAll(".avail-pill").forEach(pill => {
+        if (pill.dataset.avail === avail) {
+          pill.classList.add("active");
+        } else {
+          pill.classList.remove("active");
+        }
+      });
+      renderGrid();
+    }
+
+    // Renderizar Mapa Interactivo Vectorial SVG
+    function renderMap() {
+      const mapData = regionMapsData[currentRegion];
+      document.getElementById("mapRegionTitle").innerText = `🗺️ Mapa de Rutas de Farmeo: ${mapData.name}`;
+
+      let svgHtml = `
+        <svg viewBox="${mapData.viewBox}" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="gridGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1e293b" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#0b0f19" stop-opacity="0.9"/>
+            </radialGradient>
+            <filter id="glowEffect" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- Fondo del Mapa -->
+          <rect width="100%" height="100%" fill="url(#gridGrad)" />
+          
+          <!-- Cuadrícula sutil de navegación -->
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#grid)" />
+
+          <!-- Rutas principales trazadas -->
+          <g id="routesGroup">
+      `;
+
+      mapData.paths.forEach(p => {
+        const dashStyle = p.dash ? `stroke-dasharray="6,6"` : "";
+        svgHtml += `<path d="${p.d}" stroke="${p.stroke}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none" ${dashStyle} opacity="0.65" />`;
+        svgHtml += `<path d="${p.d}" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" ${dashStyle} opacity="0.4" />`;
+      });
+
+      svgHtml += `</g><g id="citiesGroup">`;
+
+      // Nombres de ciudades
+      mapData.cities.forEach(c => {
+        svgHtml += `
+          <circle cx="${c.x}" cy="${c.y}" r="4" fill="#64748b" stroke="#0f172a" stroke-width="2"/>
+          <text x="${c.x}" y="${c.y + 16}" font-size="10" fill="#94a3b8" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-weight="600">${c.name}</text>
+        `;
+      });
+
+      svgHtml += `</g><g id="farmNodesGroup">`;
+
+      // Nodos interactivos de farmeo de EVs
+      let activeNodesCount = 0;
+
+      mapData.nodes.forEach(n => {
+        const isSelected = currentStat === "all" || currentStat === n.stat;
+        const opacity = isSelected ? "1" : "0.25";
+        const pulseEffect = isSelected ? `filter="url(#glowEffect)"` : "";
+
+        if (isSelected) activeNodesCount++;
+
+        svgHtml += `
+          <g class="route-node" onclick="filterStat('${n.stat}')" opacity="${opacity}" style="cursor: pointer;">
+            <!-- Círculo Exterior Resaltado -->
+            <circle cx="${n.x}" cy="${n.y}" r="14" fill="${n.color}" opacity="0.25" ${pulseEffect} />
+            <circle cx="${n.x}" cy="${n.y}" r="8" fill="${n.color}" stroke="#ffffff" stroke-width="2"/>
+            
+            <!-- Etiqueta de la Ruta -->
+            <rect x="${n.x - 65}" y="${n.y - 28}" width="130" height="18" rx="4" fill="rgba(15, 23, 42, 0.85)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+            <text x="${n.x}" y="${n.y - 15}" class="route-label" text-anchor="middle">${n.label}</text>
+            <text x="${n.x}" y="${n.y + 26}" font-size="9" fill="#93c5fd" font-weight="700" text-anchor="middle">${n.desc}</text>
+          </g>
+        `;
+      });
+
+      svgHtml += `</g></svg>`;
+
+      document.getElementById("mapContainer").innerHTML = svgHtml;
+      document.getElementById("mapRoutesCount").innerText = `${activeNodesCount} rutas de hordas activas en este filtro`;
+    }
+
+    // Renderizar Tarjetas de Farmeo
+    function renderGrid() {
+      const container = document.getElementById("evGrid");
+      container.innerHTML = "";
+
+      const filtered = evSpots.filter(spot => {
+        const matchesRegion = spot.region === currentRegion;
+        const matchesStat = currentStat === "all" || spot.stat === currentStat;
+        
+        // Filtro por estación seleccionada
+        let matchesSeason = true;
+        if (spot.season !== "all" && spot.season !== simulatedSeason) {
+          matchesSeason = false;
+        }
+
+        // Filtro por tipo de disponibilidad (Todo el año vs Especial por estación)
+        let matchesAvail = true;
+        if (currentAvail === "seasonal_only" && spot.season === "all") {
+          matchesAvail = false;
+        } else if (currentAvail === "year_round" && spot.season !== "all") {
+          matchesAvail = false;
+        }
+
+        return matchesRegion && matchesStat && matchesSeason && matchesAvail;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 3.5rem; background: var(--panel); border-radius: 14px; color: var(--muted); border: 1px dashed var(--border);">
+            <div style="font-size: 2rem; margin-bottom: 8px;">🍃</div>
+            <p style="font-weight: 600; font-size: 1.05rem; color: #fff;">No hay hordas específicas para este filtro en esta estación.</p>
+            <p style="font-size: 0.88rem; margin-top: 6px;">Prueba seleccionando 'Ver Todos' en Disponibilidad o cambiando a otra región/estación.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach(spot => {
+        const card = document.createElement("div");
+        card.className = `ev-card stat-${spot.stat}`;
+
+        let seasonBadge = `<span class="card-season-tag season-all">🍃 Todo el año</span>`;
+        if (spot.season === "spring") {
+          seasonBadge = `<span class="card-season-tag season-spring-tag">🌸 Especial de Primavera</span>`;
+        } else if (spot.season === "summer") {
+          seasonBadge = `<span class="card-season-tag season-summer-tag">☀️ Especial de Verano</span>`;
+        } else if (spot.season === "autumn") {
+          seasonBadge = `<span class="card-season-tag season-autumn-tag">🍂 Especial de Otoño</span>`;
+        } else if (spot.season === "winter") {
+          seasonBadge = `<span class="card-season-tag season-winter-tag">❄️ Especial de Invierno</span>`;
+        }
+
+        const recBadge = spot.recommended ? `<span class="recommendation-badge">⭐ RECOMENDADO</span>` : "";
+
+        card.innerHTML = `
+          <div>
+            <div class="card-header">
+              <span class="stat-badge badge-${spot.stat}">${spot.statName}</span>
+              <div style="display: flex; gap: 6px; align-items: center;">
+                ${recBadge}
+                <span class="horde-yield">${spot.evYield}</span>
+              </div>
+            </div>
+
+            <div class="sweet-scent-badge">
+              🍯 <span>Horda x5 con Dulce Aroma</span>
+            </div>
+
+            <div class="pokemon-info">
+              <div class="poke-avatar">${spot.icon}</div>
+              <div>
+                <div class="poke-name">${spot.pokemon}</div>
+                <div class="poke-count">${spot.count} al usar Dulce Aroma</div>
+              </div>
+            </div>
+
+            <div class="location-box">
+              <div class="location-title">📍 ${spot.location}</div>
+              <span class="method-tag">${spot.method}</span>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: #cbd5e1; line-height: 1.55; margin-bottom: 0.8rem;">
+              ${spot.note}
+            </p>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.8rem; margin-top: 0.4rem;">
+            ${seasonBadge}
+            <span style="font-size: 0.78rem; color: var(--muted); text-transform: uppercase; font-weight: 700;">${spot.region.toUpperCase()}</span>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Inicialización al cargar la página
+    window.addEventListener("DOMContentLoaded", () => {
+      const detected = getRealPokeMMOSeason();
+      setSeason(detected);
+    });
+  </script>
+</body>
+</html>

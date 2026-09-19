@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Centro de herramientas y utilidades para jugadores de PokeMMO">
+  <title>PokeMMO Hub - Panel Principal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --panel-bg: rgba(22, 30, 49, 0.75);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --glow-color: rgba(59, 130, 246, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(59, 130, 246, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.12), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05), transparent 60%);
+      background-attachment: fixed;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 15, 25, 0.8);
+      border-bottom: 1px solid var(--panel-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #ef4444 50%, #f8fafc 50%);
+      border-radius: 50%;
+      border: 3px solid #1e293b;
+      position: relative;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-icon::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: #0f172a;
+      border: 3px solid #f8fafc;
+      border-radius: 50%;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.2rem;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.25s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Hero Section */
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem 2.5rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      color: #93c5fd;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: #3b82f6;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #3b82f6;
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.3rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #60a5fa 20%, #c084fc 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      font-size: 1.15rem;
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+
+    /* Main Menu Grid */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::after {
+      content: '';
+      height: 1px;
+      flex: 1;
+      background: var(--panel-border);
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Tool Card */
+    .tool-card {
+      background: var(--panel-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--panel-border);
+      border-radius: 18px;
+      padding: 1.8rem;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-decoration: none;
+      color: inherit;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3b82f6, #06b6d4);
+      transition: all 0.3s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(96, 165, 250, 0.4);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 1.2rem;
+    }
+
+    .card-icon-wrapper {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 26px;
+    }
+
+    .card-icon-wrapper.blue {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+    }
+
+    .card-icon-wrapper.amber {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+
+    .card-icon-wrapper.purple {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: #a78bfa;
+    }
+
+    .card-title-area h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .card-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .card-tag.soon {
+      background: rgba(148, 163, 184, 0.15);
+      color: #94a3b8;
+      border-color: rgba(148, 163, 184, 0.25);
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.55;
+      margin-bottom: 1.6rem;
+    }
+
+    .card-features {
+      list-style: none;
+      margin-bottom: 1.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+    }
+
+    .card-features li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-features li::before {
+      content: '✓';
+      color: #34d399;
+      font-weight: bold;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 1.2rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #60a5fa;
+      transition: gap 0.2s ease;
+    }
+
+    .tool-card:hover .action-btn {
+      gap: 12px;
+    }
+
+    /* Secondary / Coming Soon Cards */
+    .tool-card.disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .tool-card.disabled::before {
+      background: transparent;
+    }
+
+    .tool-card.disabled:hover {
+      transform: none;
+      border-color: var(--panel-border);
+      box-shadow: none;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--panel-border);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      background: rgba(11, 15, 25, 0.9);
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .navbar {
+        padding: 1rem;
+      }
+      .nav-links {
+        display: none;
+      }
+      .hero {
+        padding: 2.5rem 1rem 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon"></div>
+      <span class="brand-title">PokeMMO Tools</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link active">Inicio</a></li>
+      <li><a href="gyms-farm.html" class="nav-link">Gimnasios</a></li>
+      <li><a href="evs-farm.html" class="nav-link">Farmeo de EVs</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Herramientas para Entrenadores
+    </div>
+    <h1>Plataforma de Utilidades para <span>PokeMMO</span></h1>
+    <p>Organiza tus rutas de farmeo, optimiza tus ganancias y haz seguimiento de tus actividades diarias en todas las regiones.</p>
+  </header>
+
+  <!-- Main Tools Section -->
+  <main class="container">
+    <div class="section-title">
+      <span>Herramientas Disponibles</span>
+    </div>
+
+    <div class="tools-grid">
+      <!-- Gym Farm Tracker Card -->
+      <a href="gyms-farm.html" class="tool-card" id="link-gym-farm">
+        <div>
+          <div class="card-top">
+            <div class="card-icon-wrapper blue">
+              ⚔️
+            </div>
+            <div class="card-title-area">
+              <h2>Gym Farm Tracker</h2>
+              <span class="card-tag">ACTIVO</span>
+            </div>
+          </div>
+          <p class="card-desc">
+            Seguimiento en tiempo real del farmeo de gimnasios en Kanto, Johto, Hoenn, Sinnoh y Teselia con cálculo automático de dinero.
+          </p>
+          <ul class="card-features">
+            <li>Kanto, Johto, Hoenn, Sinnoh y Teselia</li>
+            <li>Calculadora con Amuleto Moneda (+50%)</li>
+            <li>Temporizadores y guardado local automático</li>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Herramienta diaria</span>
+          <span class="action-btn">
+            Abrir Tracker &rarr;
+          </span>
+        </div>
+      </a>
+
+      <!-- EV Farm Guide Card -->
+      <a href="evs-farm.html" class="tool-card" id="link-evs-farm">
+        <div>
+          <div class="card-top">
+            <div class="card-icon-wrapper amber">
+              ⚡
+            </div>
+            <div class="card-title-area">
+              <h2>Farmeo de EVs y Estaciones</h2>
+              <span class="card-tag">ACTIVO</span>
+            </div>
+          </div>
+          <p class="card-desc">
+            Guía de hordas para maximizar PS, Ataque, Defensa, Atq Esp, Def Esp y Velocidad en las 5 regiones considerando la rotación climática de estaciones.
+          </p>
+          <ul class="card-features">
+            <li>Kanto, Johto, Hoenn, Sinnoh y Teselia</li>
+            <li>Detector y simulador de estaciones (Invierno, Primavera, etc.)</li>
+            <li>Filtro interactivo por Stat y mejores spots con Dulce Aroma</li>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <span style="color: var(--text-muted); font-size: 0.85rem;">Guía de entrenamiento</span>
+          <span class="action-btn">
+            Explorar EVs &rarr;
+          </span>
+        </div>
+      </a>
+
+      <div class="tool-card disabled">
+        <div>
+          <div class="card-top">
+            <div class="card-icon-wrapper purple">
+              🌱
+            </div>
+            <div class="card-title-area">
+              <h2>Plantación de Bayas</h2>
+              <span class="card-tag soon">PRÓXIMAMENTE</span>
+            </div>
+          </div>
+          <p class="card-desc">
+            Calculadora de tiempos de cosecha, regado y coste/beneficio de semillas y bayas en Teselia y Hoenn.
+          </p>
+          <ul class="card-features">
+            <li>Alarmas para regado de bayas</li>
+            <li>Margen neto de beneficio por semilla</li>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <span style="color: var(--text-muted); font-size: 0.85rem;">En desarrollo</span>
+          <span style="color: var(--text-muted);">Próximamente</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    PokeMMO Tools &copy; 2026 - Diseñado para optimizar tu tiempo y ganancias en PokeMMO.
+  </footer>
+
+</body>
+</html>
