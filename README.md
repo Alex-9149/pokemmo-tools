@@ -6,7 +6,7 @@
 
 <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png" width="80" alt="Pokeball" />
 <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png" width="80" alt="Greatball" />
-<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items.ultra-ball.png" width="80" alt="Ultraball" />
+<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png" width="80" alt="Ultraball" />
 
 </div>
 
