@@ -29,12 +29,89 @@
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    padding: 24px;
+    padding-bottom: 32px;
+  }
+
+  /* Navbar Unificada */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(17, 24, 39, 0.9);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ef4444 50%, #f8fafc 50%);
+    border-radius: 50%;
+    border: 3px solid #1e293b;
+    position: relative;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-icon::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #0f172a;
+    border: 3px solid #f8fafc;
+    border-radius: 50%;
+  }
+
+  .brand-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #ffffff, #93c5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover, .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .container {
     max-width: 1200px;
     margin: auto;
+    padding: 0 24px;
   }
 
   header {
@@ -213,7 +290,6 @@
     font-size: 13px;
   }
 
-  /* ESTILOS DE LA COLUMNA TIEMPO */
   .time-box {
     display: flex;
     flex-direction: column;
@@ -261,7 +337,6 @@
     font-size: 14px;
   }
 
-  /* COLORES DE TIPOS */
   .type-normal { background: #6b7280; }
   .type-fire { background: #dc2626; }
   .type-water { background: #2563eb; }
@@ -294,7 +369,8 @@
   }
 
   @media (max-width: 750px) {
-    body { padding: 12px; }
+    body { padding-bottom: 24px; }
+    .navbar { padding: 1rem; }
     table { font-size: 13px; }
     th, td { padding: 10px 8px; }
     .city-en { font-size: 11px; }
@@ -312,20 +388,31 @@
 
 <body>
 
+  <!-- Navbar Global -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon"></div>
+      <span class="brand-title">PokeMMO Tools</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Inicio</a></li>
+      <li><a href="gyms-farm.html" class="nav-link active">Gimnasios</a></li>
+      <li><a href="evs-farm.html" class="nav-link">Farmeo de EVs</a></li>
+      <li><a href="breeding.html" class="nav-link">Crianza</a></li>
+    </ul>
+  </nav>
+
 <div class="container">
 
   <header>
     <div>
-      <h1>🎮 PokeMMO — Gym Farm Tracker</h1>
+      <h1>PokeMMO — Gym Farm Tracker</h1>
       <div class="subtitle">
-        Marca los gimnasios que ya has farmeado.
-        El estado y tiempos de cooldown (18h) se guardan automáticamente.
+        Marca los gimnasios que ya has farmeado. El estado y tiempos de cooldown (18h) se guardan automáticamente.
       </div>
     </div>
 
-    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-      <a href="index.html" style="text-decoration: none; background: #374151; color: white; border-radius: 8px; padding: 10px 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">⮌ Inicio</a>
-      <a href="evs-farm.html" style="text-decoration: none; background: #2563eb; color: white; border-radius: 8px; padding: 10px 16px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">⚡ Farmeo EVs</a>
+    <div>
       <button id="reset">↻ Reset — Borrar todos</button>
     </div>
   </header>
@@ -362,28 +449,19 @@
   <div id="regions"></div>
 
   <div class="save-status">
-    💾 Guardado automático: puedes cerrar el HTML y abrirlo de nuevo
-    sin perder las marcas ni los tiempos de cooldown.
+    💾 Guardado automático: puedes cerrar el navegador y abrirlo de nuevo sin perder las marcas ni los tiempos.
   </div>
 
   <div class="danger-note">
-    ⚠️ Si borras los datos/localStorage del navegador, también se borrarán
-    las marcas e historiales de tiempo.
+    ⚠️ Si borras el historial o almacenamiento local del navegador, se borrarán las marcas.
   </div>
 
 </div>
 
 <script>
-
-/* =========================================================
-   DATOS DE LOS GIMNASIOS
-   [número, ciudad ES, ciudad EN, líder, tipo, recompensa Base ($), disponible (boolean)]
-   ========================================================= */
-
-const GYM_COOLDOWN_MS = 18 * 60 * 60 * 1000; // 18 horas en milisegundos
+const GYM_COOLDOWN_MS = 18 * 60 * 60 * 1000;
 
 const regions = {
-
   "Kanto": [
     ["1", "Ciudad Plateada", "Pewter City", "Brock", "Roca", 9000, true],
     ["2", "Ciudad Celeste", "Cerulean City", "Misty", "Agua", 9000, true],
@@ -394,7 +472,6 @@ const regions = {
     ["7", "Isla Canela", "Cinnabar Island", "Blaine", "Fuego", 9000, true],
     ["8", "Ciudad Verde", "Viridian City", "Giovanni", "Tierra", 0, false]
   ],
-
   "Johto": [
     ["1", "Ciudad Malva", "Violet City", "Falkner", "Volador", 9000, true],
     ["2", "Pueblo Azalea", "Azalea Town", "Bugsy", "Bicho", 9000, true],
@@ -405,7 +482,6 @@ const regions = {
     ["7", "Pueblo Caoba", "Mahogany Town", "Pryce", "Hielo", 9000, true],
     ["8", "Ciudad Endrino", "Blackthorn City", "Clair", "Dragón", 9000, true]
   ],
-
   "Hoenn": [
     ["1", "Ciudad Férrica", "Rustboro City", "Roxanne", "Roca", 9000, true],
     ["2", "Pueblo Azuliza", "Dewford Town", "Brawly", "Lucha", 9000, true],
@@ -416,7 +492,6 @@ const regions = {
     ["7", "Ciudad Algaria", "Mossdeep City", "Tate & Liza", "Psíquico", 9000, true],
     ["8", "Arrecípolis", "Sootopolis City", "Juan", "Agua", 9000, true]
   ],
-
   "Sinnoh": [
     ["1", "Ciudad Pirita", "Oreburgh City", "Roark", "Roca", 9000, true],
     ["2", "Ciudad Vetusta", "Eterna City", "Gardenia", "Planta", 9000, true],
@@ -427,7 +502,6 @@ const regions = {
     ["7", "Ciudad Puntaneva", "Snowpoint City", "Candice", "Hielo", 9000, true],
     ["8", "Ciudad Marina", "Sunyshore City", "Volkner", "Eléctrico", 9000, true]
   ],
-
   "Unova": [
     ["1", "Ciudad Gres (3 Líderes)", "Striaton City", "Chili, Cilan y Cress", "Fuego / Planta / Agua", 27000, true],
     ["2", "Ciudad Esmalte", "Nacrene City", "Lenora", "Normal", 9000, true],
@@ -438,7 +512,6 @@ const regions = {
     ["7", "Ciudad Teja", "Icirrus City", "Brycen", "Hielo", 9000, true],
     ["8", "Ciudad Caolín", "Opelucid City", "Drayden / Iris", "Dragón", 9000, true]
   ]
-
 };
 
 const typeIcons = {
@@ -459,10 +532,7 @@ const typeClasses = {
 };
 
 const STORAGE_KEY = "pokemmo-gym-farm-v2";
-
-let state = JSON.parse(
-  localStorage.getItem(STORAGE_KEY) || "{}"
-);
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
 
 function formatMoney(amount) {
   return "$" + amount.toLocaleString("es-ES");
@@ -484,7 +554,6 @@ function renderTimeCell(key, isAvailable) {
   let timeVal = state[key];
   if (!timeVal) return `<span class="time-done">-</span>`;
 
-  // Si el valor guardado antiguo era un booleano 'true', asignamos el tiempo actual
   if (timeVal === true) {
     timeVal = Date.now();
     state[key] = timeVal;
@@ -598,8 +667,6 @@ function render() {
   regionsEl.innerHTML = "";
 
   Object.keys(regions).forEach((region, index) => {
-
-    /* TAB */
     const tab = document.createElement("button");
     tab.className = "tab" + (index === 0 ? " active" : "");
     tab.textContent = region;
@@ -614,7 +681,6 @@ function render() {
 
     tabs.appendChild(tab);
 
-    /* SECCIÓN */
     const section = document.createElement("section");
     section.className = "region" + (index === 0 ? " active" : "");
     section.id = `region-${region}`;
@@ -643,7 +709,6 @@ function render() {
 
     const tbody = section.querySelector("tbody");
 
-    /* GIMNASIOS */
     regions[region].forEach((gym, i) => {
       const key = `${region}-${i}`;
       const tr = document.createElement("tr");
@@ -710,31 +775,19 @@ function render() {
 
   updateSummary();
   updateRegionProgress();
+  updateAllTimers();
 }
 
-/* RESET */
 document.getElementById("reset").addEventListener("click", () => {
-  if (confirm("¿Seguro que quieres borrar TODOS los gimnasios marcados y sus tiempos?")) {
+  if (confirm("¿Seguro que deseas reiniciar todos los datos y contadores?")) {
     state = {};
-    localStorage.removeItem(STORAGE_KEY);
-
-    document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      cb.checked = false;
-      cb.closest("tr").classList.remove("done");
-    });
-
-    save();
+    saveState();
+    render();
   }
 });
 
-/* INICIAR Y ACTUALIZAR CADA MINUTO */
 render();
-
-setInterval(() => {
-  updateAllTimers();
-}, 60000);
-
+setInterval(updateAllTimers, 30000);
 </script>
-
 </body>
 </html>

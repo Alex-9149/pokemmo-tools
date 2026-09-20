@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PokeMMO — Breeding & Hatch Simulator</title>
+
+<style>
+  :root {
+    --bg: #111827;
+    --panel: #1f2937;
+    --panel2: #243244;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+    --ready: #22c55e;
+    --done: #166534;
+    --border: #374151;
+    --danger: #dc2626;
+    --gold: #f59e0b;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 24px;
+  }
+
+  /* NAVBAR UNIFICADA */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(14px);
+    background: rgba(17, 24, 39, 0.9);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ef4444 50%, #f8fafc 50%);
+    border-radius: 50%;
+    border: 3px solid #1e293b;
+    position: relative;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand-icon::after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background: #0f172a;
+    border: 3px solid #f8fafc;
+    border-radius: 50%;
+  }
+
+  .brand-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #ffffff, #93c5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 6px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  @media (max-width: 750px) {
+    .navbar {
+      padding: 1rem;
+    }
+
+    .nav-links {
+      gap: 0.5rem;
+    }
+
+    .nav-link {
+      padding: 6px 10px;
+    }
+  }
+
+
+  .container {
+    max-width: 1350px;
+    margin: auto;
+    padding: 0 24px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin-top: 5px;
+    font-size: 14px;
+  }
+
+  button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .btn-danger {
+    background: var(--danger);
+    color: white;
+  }
+
+  .btn-danger:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-accent {
+    background: var(--accent);
+    color: #07111f;
+  }
+
+  .btn-accent:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+  }
+
+  /* SUMMARY OVERVIEW BAR */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .card .label {
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .card .value {
+    font-size: 22px;
+    font-weight: 800;
+    margin-top: 4px;
+  }
+
+  .card .value.gold { color: var(--gold); }
+  .card .value.ready { color: var(--ready); }
+  .card .value.danger { color: var(--danger); }
+
+  /* MAIN BREEDING GRID: Padre | Cría | Madre */
+  .breeding-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+  }
+
+  @media (max-width: 1100px) {
+    .breeding-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .col-card {
+    padding: 0;
+  }
+
+  .col-card.result {
+    border-color: var(--accent);
+  }
+
+  .panel-header {
+    background: var(--panel2);
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
+  }
+
+  .panel-header h2 {
+    margin: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .panel-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .poke-profile {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .poke-sprite {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    object-fit: contain;
+    image-rendering: pixelated;
+    background: var(--panel2);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 4px;
+  }
+
+  .poke-info-basic {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus {
+    border-color: var(--accent);
+  }
+
+  select option:disabled {
+    color: #6b7280;
+  }
+
+  select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* SELECTOR DE POKÉMON */
+  .combo-field {
+    position: relative;
+  }
+
+  .combo-field svg {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .combo-input {
+    padding: 10px 32px 10px 34px !important;
+    font-size: 14px !important;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .combo-field::after {
+    content: "";
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+    transition: transform 0.15s ease;
+  }
+
+  .combo.open .combo-field::after {
+    transform: translateY(-15%) rotate(-135deg);
+  }
+
+  .combo.open .combo-input {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+  }
+
+  .combo-panel {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: 60;
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .combo.open .combo-panel {
+    display: block;
+  }
+
+  .combo-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--panel2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .combo-list {
+    position: relative;
+    max-height: 360px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .combo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    border-bottom: 1px solid rgba(55, 65, 81, 0.45);
+  }
+
+  .combo-item:last-child {
+    border-bottom: 0;
+  }
+
+  .combo-item.active {
+    background: rgba(96, 165, 250, 0.15);
+    border-left-color: var(--accent);
+  }
+
+  .combo-item.selected .combo-name::after {
+    content: "  ✓";
+    color: var(--ready);
+  }
+
+  .combo-item img {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: contain;
+    image-rendering: pixelated;
+    background: rgba(0, 0, 0, 0.28);
+    border-radius: 8px;
+  }
+
+  .combo-text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .combo-name {
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .combo-num {
+    display: inline-block;
+    min-width: 38px;
+    margin-right: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .combo-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .combo-empty {
+    padding: 22px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .groups-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .gbadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  /* IV TABLE & HIGHLIGHTS */
+  .iv-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+
+  .iv-table th, .iv-table td {
+    padding: 6px 4px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .iv-table th {
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  .iv-input {
+    width: 100% !important;
+    max-width: 52px;
+    text-align: center;
+    padding: 6px 2px !important;
+    font-weight: 800;
+  }
+
+  div.iv-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  .iv-31 {
+    background-color: #166534 !important;
+    color: #4ade80 !important;
+    border-color: #22c55e !important;
+  }
+
+  .iv-30 {
+    background-color: #1e3a8a !important;
+    color: #60a5fa !important;
+    border-color: #3b82f6 !important;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 4px;
+  }
+
+  .badge-shiny {
+    background: #854d0e;
+    color: #fef08a;
+    border: 1px solid var(--gold);
+  }
+
+  .badge-alpha {
+    background: #7f1d1d;
+    color: #fca5a5;
+    border: 1px solid var(--danger);
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .checkbox-label input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  /* BANNERS */
+  .alert-banner {
+    background: rgba(220, 38, 38, 0.15);
+    border: 1px solid var(--danger);
+    border-left: 4px solid var(--danger);
+    padding: 12px 14px;
+    border-radius: 6px;
+    color: #fca5a5;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .warning-banner {
+    background: rgba(245, 158, 11, 0.15);
+    border-left: 4px solid var(--gold);
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: #fef08a;
+    font-size: 12px;
+  }
+
+  /* RESULT PANEL */
+  .cost-breakdown {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .cost-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .cost-item.total {
+    border-top: 1px dashed var(--border);
+    padding-top: 8px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--gold);
+  }
+
+  .moves-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .move-tag {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  .notes {
+    margin-top: 24px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="index.html" class="nav-brand">
+      <div class="brand-icon"></div>
+      <span class="brand-title">PokeMMO Tools</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-link">Inicio</a></li>
+      <li><a href="gyms-farm.html" class="nav-link">Gimnasios</a></li>
+      <li><a href="evs-farm.html" class="nav-link">Farmeo de EVs</a></li>
+      <li><a href="breeding.html" class="nav-link active">Crianza</a></li>
+    </ul>
+  </nav>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <h1>PokeMMO — Breeding & Hatch Simulator</h1>
+      <div class="subtitle">
+        Simula combinaciones de crianza, calcula la herencia de IVs, naturaleza, movimientos y el coste total en Pokedólares.
+      </div>
+    </div>
+    <div>
+      <button id="reset-btn" class="btn-danger">↻ Resetear Simulador</button>
+    </div>
+  </header>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary">
+    <div class="card">
+      <div class="label">Estado de Crianza</div>
+      <div class="value" id="summary-status">✅ Compatible</div>
+    </div>
+    <div class="card">
+      <div class="label">Coste Total</div>
+      <div class="value gold" id="summary-cost">$0</div>
+    </div>
+    <div class="card">
+      <div class="label">Especie Resultante</div>
+      <div class="value" id="summary-species">---</div>
+    </div>
+    <div class="card">
+      <div class="label">Naturaleza</div>
+      <div class="value" id="summary-nature">Aleatoria</div>
+    </div>
+    <div class="card">
+      <div class="label">Garantía IVs 31</div>
+      <div class="value ready" id="summary-31s">0x 31</div>
+    </div>
+  </div>
+
+  <!-- MAIN BREEDING GRID: PADRE (izquierda) | CRÍA (centro) | MADRE (derecha) -->
+  <div class="breeding-grid">
+
+    <!-- COLUMNA IZQUIERDA: PADRE A -->
+    <div class="card col-card">
+      <div class="panel-header">
+        <h2>Pokemon 1</h2>
+      </div>
+      <div class="panel-body">
+
+        <div class="poke-profile">
+          <img id="sprite-a" class="poke-sprite" src="" alt="Padre A">
+          <div class="poke-info-basic">
+            <div class="form-group">
+              <label for="species-a">Especie:</label>
+              <div class="combo" id="combo-a">
+                <div class="combo-field">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                  <input type="text" id="species-a" class="combo-input" role="combobox" aria-expanded="false" aria-controls="list-a" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Nombre, nº o grupo huevo...">
+                </div>
+                <div class="combo-panel">
+                  <div class="combo-meta"><span class="combo-count"></span><span>↑ ↓ navegar · Enter elegir</span></div>
+                  <div class="combo-list" id="list-a" role="listbox"></div>
+                </div>
+              </div>
+            </div>
+            <div class="groups-row" id="groups-a"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="gender-a">Género:</label>
+            <select id="gender-a">
+              <option value="male">Macho (♂)</option>
+              <option value="female">Hembra (♀)</option>
+              <option value="genderless">Sin Género (⚲)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="item-a">Objeto Equipado:</label>
+            <select id="item-a">
+              <option value="none">Ninguno</option>
+              <option value="everstone">Piedraeterna (Naturaleza)</option>
+              <option value="power-hp">Pesa Recia (PS)</option>
+              <option value="power-atk">Brazal Recio (Ataque)</option>
+              <option value="power-def">Cinto Recio (Defensa)</option>
+              <option value="power-spa">Lente Recia (Atk. Esp)</option>
+              <option value="power-spd">Banda Recia (Def. Esp)</option>
+              <option value="power-spe">Franja Recia (Velocidad)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nature-a">Naturaleza:</label>
+            <select id="nature-a"></select>
+          </div>
+          <div class="form-group">
+            <label for="ability-a">Habilidad:</label>
+            <select id="ability-a">
+              <option value="1">Habilidad 1</option>
+              <option value="2">Habilidad 2</option>
+              <option value="ha">Habilidad Oculta (HA)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="shiny-a"> ✨ Shiny</label>
+          <label class="checkbox-label"><input type="checkbox" id="alpha-a"> 🔴 Alfa</label>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label>Valores IVs (0 - 31):</label>
+            <div>
+              <button class="btn-accent btn-sm" onclick="setAllIVs('a', 31)">31 Todos</button>
+              <button class="btn-accent btn-sm" style="background:#4b5563; color:white;" onclick="setAllIVs('a', 0)">0 Todos</button>
+            </div>
+          </div>
+
+          <table class="iv-table">
+            <thead>
+              <tr>
+                <th>PS</th><th>Atk</th><th>Def</th><th>SpA</th><th>SpD</th><th>Spe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="number" id="iv-a-0" class="iv-input" min="0" max="31" value="31"></td>
+                <td><input type="number" id="iv-a-1" class="iv-input" min="0" max="31" value="31"></td>
+                <td><input type="number" id="iv-a-2" class="iv-input" min="0" max="31" value="20"></td>
+                <td><input type="number" id="iv-a-3" class="iv-input" min="0" max="31" value="10"></td>
+                <td><input type="number" id="iv-a-4" class="iv-input" min="0" max="31" value="15"></td>
+                <td><input type="number" id="iv-a-5" class="iv-input" min="0" max="31" value="31"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="form-group">
+          <label>Movimientos Conocidos (Movs. Huevo):</label>
+          <div class="moves-grid">
+            <input type="text" id="move-a-1" placeholder="Movimiento 1">
+            <input type="text" id="move-a-2" placeholder="Movimiento 2">
+            <input type="text" id="move-a-3" placeholder="Movimiento 3">
+            <input type="text" id="move-a-4" placeholder="Movimiento 4">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- COLUMNA CENTRAL: RESULTADO DE LA CRÍA -->
+    <div class="card col-card result">
+      <div class="panel-header">
+        <h2>Resultado de la Cría</h2>
+      </div>
+      <div class="panel-body">
+
+        <div id="incompatible-banner" class="alert-banner" style="display: none;">
+          ⚠️ <strong>Crianza Incompatible:</strong> <span id="incompatible-reason">---</span>
+        </div>
+
+        <div id="alpha-warning-banner" class="warning-banner" style="display: none; margin-bottom: 8px;">
+          ⚠️ <strong>Advertencia Alfa:</strong> Si uno de los padres no es Alfa, la cría perderá el estado Alfa.
+        </div>
+
+        <div id="result-content">
+          <div class="poke-profile">
+            <img id="sprite-child" class="poke-sprite" src="" alt="Bebé">
+            <div class="poke-info-basic">
+              <h3 id="child-name" style="margin: 0 0 4px 0; font-size: 18px;">---</h3>
+              <div id="child-badges" class="groups-row" style="margin-top: 0;"></div>
+              <div id="child-ratio" style="margin-top: 6px; font-size: 12px; color: var(--muted);"></div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 12px;">
+            <label>IVs Resultantes de la Cría:</label>
+            <table class="iv-table">
+              <thead>
+                <tr>
+                  <th>PS</th><th>Atk</th><th>Def</th><th>SpA</th><th>SpD</th><th>Spe</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id="child-iv-row"></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="form-row" style="margin-top: 8px;">
+            <div class="form-group">
+              <label>Naturaleza Resultante:</label>
+              <div id="child-nature-display" style="font-weight: 700; color: var(--ready); font-size: 13px;">
+                Aleatoria (1 de 25)
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Herencia Habilidad:</label>
+              <div id="child-ability-display" style="font-size: 12px; color: var(--text);">
+                80% Habilidad Materna / 20% Secundaria
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 8px;">
+            <label>Movimientos Huevo Heredados:</label>
+            <div id="child-moves-list" class="moves-grid">
+              <span class="move-tag">- Sin movimientos -</span>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="child-gender-select">Selección de Género de la Cría (Tarifa PokeMMO):</label>
+            <select id="child-gender-select">
+              <option value="random">Aleatorio (Sin coste adicional - $0)</option>
+              <option value="male">Forzar Macho ♂</option>
+              <option value="female">Forzar Hembra ♀</option>
+            </select>
+          </div>
+
+          <div class="cost-breakdown" style="margin-top: 10px;">
+            <div class="cost-item">
+              <span>Objetos Recios (Padres):</span>
+              <span id="cost-power-items">$0</span>
+            </div>
+            <div class="cost-item">
+              <span>Piedraeterna(s):</span>
+              <span id="cost-everstone">$0</span>
+            </div>
+            <div class="cost-item">
+              <span>Tarifa de Elección de Género:</span>
+              <span id="cost-gender">$0</span>
+            </div>
+            <div class="cost-item total">
+              <span>COSTE TOTAL DEL CRUCE:</span>
+              <span id="cost-total">$0</span>
+            </div>
+          </div>
+
+        </div> <!-- End result-content -->
+
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: MADRE B -->
+    <div class="card col-card">
+      <div class="panel-header">
+        <h2>Pokemon 2</h2>
+      </div>
+      <div class="panel-body">
+
+        <div class="poke-profile">
+          <img id="sprite-b" class="poke-sprite" src="" alt="Madre B">
+          <div class="poke-info-basic">
+            <div class="form-group">
+              <label for="species-b">Especie:</label>
+              <div class="combo" id="combo-b">
+                <div class="combo-field">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+                  <input type="text" id="species-b" class="combo-input" role="combobox" aria-expanded="false" aria-controls="list-b" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Nombre, nº o grupo huevo...">
+                </div>
+                <div class="combo-panel">
+                  <div class="combo-meta"><span class="combo-count"></span><span>↑ ↓ navegar · Enter elegir</span></div>
+                  <div class="combo-list" id="list-b" role="listbox"></div>
+                </div>
+              </div>
+            </div>
+            <div class="groups-row" id="groups-b"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="gender-b">Género:</label>
+            <select id="gender-b">
+              <option value="male">Macho (♂)</option>
+              <option value="female">Hembra (♀)</option>
+              <option value="genderless">Sin Género (⚲)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="item-b">Objeto Equipado:</label>
+            <select id="item-b">
+              <option value="none">Ninguno</option>
+              <option value="everstone">Piedraeterna (Naturaleza)</option>
+              <option value="power-hp">Pesa Recia (PS)</option>
+              <option value="power-atk">Brazal Recio (Ataque)</option>
+              <option value="power-def">Cinto Recio (Defensa)</option>
+              <option value="power-spa">Lente Recia (Atk. Esp)</option>
+              <option value="power-spd">Banda Recia (Def. Esp)</option>
+              <option value="power-spe">Franja Recia (Velocidad)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nature-b">Naturaleza:</label>
+            <select id="nature-b"></select>
+          </div>
+          <div class="form-group">
+            <label for="ability-b">Habilidad:</label>
+            <select id="ability-b">
+              <option value="1">Habilidad 1</option>
+              <option value="2">Habilidad 2</option>
+              <option value="ha">Habilidad Oculta (HA)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" id="shiny-b"> ✨ Shiny</label>
+          <label class="checkbox-label"><input type="checkbox" id="alpha-b"> 🔴 Alfa</label>
+        </div>
+
+        <div class="form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label>Valores IVs (0 - 31):</label>
+            <div>
+              <button class="btn-accent btn-sm" onclick="setAllIVs('b', 31)">31 Todos</button>
+              <button class="btn-accent btn-sm" style="background:#4b5563; color:white;" onclick="setAllIVs('b', 0)">0 Todos</button>
+            </div>
+          </div>
+
+          <table class="iv-table">
+            <thead>
+              <tr>
+                <th>PS</th><th>Atk</th><th>Def</th><th>SpA</th><th>SpD</th><th>Spe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="number" id="iv-b-0" class="iv-input" min="0" max="31" value="31"></td>
+                <td><input type="number" id="iv-b-1" class="iv-input" min="0" max="31" value="31"></td>
+                <td><input type="number" id="iv-b-2" class="iv-input" min="0" max="31" value="20"></td>
+                <td><input type="number" id="iv-b-3" class="iv-input" min="0" max="31" value="5"></td>
+                <td><input type="number" id="iv-b-4" class="iv-input" min="0" max="31" value="15"></td>
+                <td><input type="number" id="iv-b-5" class="iv-input" min="0" max="31" value="31"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="form-group">
+          <label>Movimientos Conocidos (Movs. Huevo):</label>
+          <div class="moves-grid">
+            <input type="text" id="move-b-1" placeholder="Movimiento 1">
+            <input type="text" id="move-b-2" placeholder="Movimiento 2">
+            <input type="text" id="move-b-3" placeholder="Movimiento 3">
+            <input type="text" id="move-b-4" placeholder="Movimiento 4">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div> <!-- End breeding-grid -->
+
+  <div class="notes">
+    💾 <strong>Notas de Reglas PokeMMO:</strong>
+    <ul>
+      <li>El objeto recio asigna el 100% de ese IV del padre portador a la cría ($10,000 c/u).</li>
+      <li>Si los stats sin objeto recio son iguales entre ambos padres, el hijo hereda ese IV al 100%. De lo contrario, hereda el promedio redondeado hacia abajo: ⌊(IV₁ + IV₂) / 2⌋.</li>
+      <li>En PokeMMO, la crianza consume a ambos padres para generar el huevo. La cría toma la línea evolutiva básica de la madre (o del no-Ditto).</li>
+      <li>Crianza Shiny requiere que AMBOS padres sean Shiny. Crianza Alfa requiere que AMBOS sean Alfa para garantizar el estado.</li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   BASE DE DATOS POKÉMON (Pokédex nacional, gens 1-5)
+   ========================================================= */
+const GROUP_NAMES = {
+  Mo: "Monster", W1: "Water 1", W2: "Water 2", W3: "Water 3", Bu: "Bug",
+  Fl: "Flying", Fi: "Field", Fa: "Fairy", Gr: "Grass", Hu: "Human-Like",
+  Mi: "Mineral", Am: "Amorphous", Dr: "Dragon", Di: "Ditto", Un: "No Eggs Discovered"
+};
+
+const GROUP_COLORS = {
+  "Monster": "#fb923c", "Water 1": "#60a5fa", "Water 2": "#38bdf8", "Water 3": "#22d3ee",
+  "Bug": "#a3e635", "Flying": "#a5b4fc", "Field": "#f59e0b", "Fairy": "#f9a8d4",
+  "Grass": "#4ade80", "Human-Like": "#c084fc", "Mineral": "#a8a29e", "Amorphous": "#e879f9",
+  "Dragon": "#f87171", "Ditto": "#d946ef", "No Eggs Discovered": "#9ca3af"
+};
+
+const RAW = `
+1|Bulbasaur|Mo,Gr|87.5
+2|Ivysaur|+
+3|Venusaur|+
+4|Charmander|Mo,Dr|87.5
+5|Charmeleon|+
+6|Charizard|+
+7|Squirtle|Mo,W1|87.5
+8|Wartortle|+
+9|Blastoise|+
+10|Caterpie|Bu
+11|Metapod|+
+12|Butterfree|+
+13|Weedle|Bu
+14|Kakuna|+
+15|Beedrill|+
+16|Pidgey|Fl
+17|Pidgeotto|+
+18|Pidgeot|+
+19|Rattata|Fi
+20|Raticate|+
+21|Spearow|Fl
+22|Fearow|+
+23|Ekans|Fi,Dr
+24|Arbok|+
+25|Pikachu|Fi,Fa|50|172
+26|Raichu|+
+27|Sandshrew|Fi
+28|Sandslash|+
+29|Nidoran♀|Mo,Fi|0
+30|Nidorina|Un|0|29
+31|Nidoqueen|Un|0|29
+32|Nidoran♂|Mo,Fi|100
+33|Nidorino|Mo,Fi|100|32
+34|Nidoking|Mo,Fi|100|32
+35|Clefairy|Fa|25|173
+36|Clefable|+
+37|Vulpix|Fi|25
+38|Ninetales|+
+39|Jigglypuff|Fa|25|174
+40|Wigglytuff|+
+41|Zubat|Fl
+42|Golbat|+
+43|Oddish|Gr
+44|Gloom|+
+45|Vileplume|+
+46|Paras|Bu,Gr
+47|Parasect|+
+48|Venonat|Bu
+49|Venomoth|+
+50|Diglett|Fi
+51|Dugtrio|+
+52|Meowth|Fi
+53|Persian|+
+54|Psyduck|W1,Fi
+55|Golduck|+
+56|Mankey|Fi
+57|Primeape|+
+58|Growlithe|Fi|75
+59|Arcanine|+
+60|Poliwag|W1
+61|Poliwhirl|+
+62|Poliwrath|+
+63|Abra|Hu|75
+64|Kadabra|+
+65|Alakazam|+
+66|Machop|Hu|75
+67|Machoke|+
+68|Machamp|+
+69|Bellsprout|Gr
+70|Weepinbell|+
+71|Victreebel|+
+72|Tentacool|W3
+73|Tentacruel|+
+74|Geodude|Mi
+75|Graveler|+
+76|Golem|+
+77|Ponyta|Fi
+78|Rapidash|+
+79|Slowpoke|Mo,W1
+80|Slowbro|+
+81|Magnemite|Mi|N
+82|Magneton|+
+83|Farfetch'd|Fl,Fi
+84|Doduo|Fl
+85|Dodrio|+
+86|Seel|W1,Fi
+87|Dewgong|+
+88|Grimer|Am
+89|Muk|+
+90|Shellder|W3
+91|Cloyster|+
+92|Gastly|Am
+93|Haunter|+
+94|Gengar|+
+95|Onix|Mi
+96|Drowzee|Hu
+97|Hypno|+
+98|Krabby|W3
+99|Kingler|+
+100|Voltorb|Mi|N
+101|Electrode|+
+102|Exeggcute|Gr
+103|Exeggutor|+
+104|Cubone|Mo
+105|Marowak|+
+106|Hitmonlee|Hu|100|236
+107|Hitmonchan|Hu|100|236
+108|Lickitung|Mo
+109|Koffing|Am
+110|Weezing|+
+111|Rhyhorn|Mo,Fi
+112|Rhydon|+
+113|Chansey|Fa|0|440
+114|Tangela|Gr
+115|Kangaskhan|Mo|0
+116|Horsea|W1,Dr
+117|Seadra|+
+118|Goldeen|W2
+119|Seaking|+
+120|Staryu|W3|N
+121|Starmie|+
+122|Mr. Mime|Hu|50|439
+123|Scyther|Bu
+124|Jynx|Hu|0|238
+125|Electabuzz|Hu|75|239
+126|Magmar|Hu|75|240
+127|Pinsir|Bu
+128|Tauros|Fi|100
+129|Magikarp|W2,Dr
+130|Gyarados|+
+131|Lapras|Mo,W1
+132|Ditto|Di|N
+133|Eevee|Fi|87.5
+134|Vaporeon|+
+135|Jolteon|+
+136|Flareon|+
+137|Porygon|Mi|N
+138|Omanyte|W1,W3|87.5
+139|Omastar|+
+140|Kabuto|W1,W3|87.5
+141|Kabutops|+
+142|Aerodactyl|Fl|87.5
+143|Snorlax|Mo|87.5|446
+144|Articuno|Un|N
+145|Zapdos|Un|N
+146|Moltres|Un|N
+147|Dratini|W1,Dr
+148|Dragonair|+
+149|Dragonite|+
+150|Mewtwo|Un|N
+151|Mew|Un|N
+152|Chikorita|Mo,Gr|87.5
+153|Bayleef|+
+154|Meganium|+
+155|Cyndaquil|Fi|87.5
+156|Quilava|+
+157|Typhlosion|+
+158|Totodile|Mo,W1|87.5
+159|Croconaw|+
+160|Feraligatr|+
+161|Sentret|Fi
+162|Furret|+
+163|Hoothoot|Fl
+164|Noctowl|+
+165|Ledyba|Bu
+166|Ledian|+
+167|Spinarak|Bu
+168|Ariados|+
+169|Crobat|Fl|50|41
+170|Chinchou|W2
+171|Lanturn|+
+172|Pichu|Un
+173|Cleffa|Un|25
+174|Igglybuff|Un|25
+175|Togepi|Un|87.5
+176|Togetic|Fl,Fa|87.5|175
+177|Natu|Fl
+178|Xatu|+
+179|Mareep|Mo,Fi
+180|Flaaffy|+
+181|Ampharos|+
+182|Bellossom|Gr|50|43
+183|Marill|W1,Fa|50|298
+184|Azumarill|+
+185|Sudowoodo|Mi|50|438
+186|Politoed|W1|50|60
+187|Hoppip|Fa,Gr
+188|Skiploom|+
+189|Jumpluff|+
+190|Aipom|Fi
+191|Sunkern|Gr
+192|Sunflora|+
+193|Yanma|Bu
+194|Wooper|W1,Fi
+195|Quagsire|+
+196|Espeon|Fi|87.5|133
+197|Umbreon|+
+198|Murkrow|Fl
+199|Slowking|Mo,W1|50|79
+200|Misdreavus|Am
+201|Unown|Un
+202|Wobbuffet|Am|50|360
+203|Girafarig|Fi
+204|Pineco|Bu
+205|Forretress|+
+206|Dunsparce|Fi
+207|Gligar|Bu
+208|Steelix|Mi|50|95
+209|Snubbull|Fa,Fi|25
+210|Granbull|+
+211|Qwilfish|W2
+212|Scizor|Bu|50|123
+213|Shuckle|Bu
+214|Heracross|Bu
+215|Sneasel|Fi
+216|Teddiursa|Fi
+217|Ursaring|+
+218|Slugma|Am
+219|Magcargo|+
+220|Swinub|Fi
+221|Piloswine|+
+222|Corsola|W1,W3
+223|Remoraid|W1,W2
+224|Octillery|+
+225|Delibird|W1,Fi
+226|Mantine|W1|50|458
+227|Skarmory|Fl
+228|Houndour|Fi
+229|Houndoom|+
+230|Kingdra|W1,Dr|50|116
+231|Phanpy|Fi
+232|Donphan|+
+233|Porygon2|Mi|N|137
+234|Stantler|Fi
+235|Smeargle|Fi
+236|Tyrogue|Un|100
+237|Hitmontop|Hu|100|236
+238|Smoochum|Un|0
+239|Elekid|Un|75
+240|Magby|Un|75
+241|Miltank|Fi|0
+242|Blissey|Fa|0|440
+243|Raikou|Un|N
+244|Entei|Un|N
+245|Suicune|Un|N
+246|Larvitar|Mo
+247|Pupitar|+
+248|Tyranitar|+
+249|Lugia|Un|N
+250|Ho-Oh|Un|N
+251|Celebi|Un|N
+252|Treecko|Mo,Dr|87.5
+253|Grovyle|+
+254|Sceptile|+
+255|Torchic|Fi|87.5
+256|Combusken|+
+257|Blaziken|+
+258|Mudkip|Mo,W1|87.5
+259|Marshtomp|+
+260|Swampert|+
+261|Poochyena|Fi
+262|Mightyena|+
+263|Zigzagoon|Fi
+264|Linoone|+
+265|Wurmple|Bu
+266|Silcoon|+
+267|Beautifly|+
+268|Cascoon|+
+269|Dustox|+
+270|Lotad|W1,Gr
+271|Lombre|+
+272|Ludicolo|+
+273|Seedot|Fi,Gr
+274|Nuzleaf|+
+275|Shiftry|+
+276|Taillow|Fl
+277|Swellow|+
+278|Wingull|W1,Fl
+279|Pelipper|+
+280|Ralts|Am,Hu
+281|Kirlia|+
+282|Gardevoir|+
+283|Surskit|W1,Bu
+284|Masquerain|+
+285|Shroomish|Fa,Gr
+286|Breloom|+
+287|Slakoth|Fi
+288|Vigoroth|+
+289|Slaking|+
+290|Nincada|Bu
+291|Ninjask|+
+292|Shedinja|Un|N|290
+293|Whismur|Mo,Fi
+294|Loudred|+
+295|Exploud|+
+296|Makuhita|Hu|75
+297|Hariyama|+
+298|Azurill|Un|25
+299|Nosepass|Mi
+300|Skitty|Fa,Fi|25
+301|Delcatty|+
+302|Sableye|Hu
+303|Mawile|Fi,Fa
+304|Aron|Mo
+305|Lairon|+
+306|Aggron|+
+307|Meditite|Hu
+308|Medicham|+
+309|Electrike|Fi
+310|Manectric|+
+311|Plusle|Fa
+312|Minun|Fa
+313|Volbeat|Bu,Hu|100
+314|Illumise|Bu,Hu|0
+315|Roselia|Fa,Gr|50|406
+316|Gulpin|Am
+317|Swalot|+
+318|Carvanha|W2
+319|Sharpedo|+
+320|Wailmer|Fi,W2
+321|Wailord|+
+322|Numel|Fi
+323|Camerupt|+
+324|Torkoal|Fi
+325|Spoink|Fi
+326|Grumpig|+
+327|Spinda|Fi,Hu
+328|Trapinch|Bu,Dr
+329|Vibrava|+
+330|Flygon|+
+331|Cacnea|Gr,Hu
+332|Cacturne|+
+333|Swablu|Fl,Dr
+334|Altaria|+
+335|Zangoose|Fi
+336|Seviper|Fi,Dr
+337|Lunatone|Mi|N
+338|Solrock|Mi|N
+339|Barboach|W2
+340|Whiscash|+
+341|Corphish|W1,W3
+342|Crawdaunt|+
+343|Baltoy|Mi|N
+344|Claydol|+
+345|Lileep|W3|87.5
+346|Cradily|+
+347|Anorith|W3|87.5
+348|Armaldo|+
+349|Feebas|W1,Dr
+350|Milotic|+
+351|Castform|Fa,Am
+352|Kecleon|Fi
+353|Shuppet|Am
+354|Banette|+
+355|Duskull|Am
+356|Dusclops|+
+357|Tropius|Mo,Gr
+358|Chimecho|Am|50|433
+359|Absol|Fi
+360|Wynaut|Un
+361|Snorunt|Fa,Mi
+362|Glalie|+
+363|Spheal|W1,Fi
+364|Sealeo|+
+365|Walrein|+
+366|Clamperl|W1
+367|Huntail|+
+368|Gorebyss|+
+369|Relicanth|W1,W2
+370|Luvdisc|W2
+371|Bagon|Dr
+372|Shelgon|+
+373|Salamence|+
+374|Beldum|Mi|N
+375|Metang|+
+376|Metagross|+
+377|Regirock|Un|N
+378|Regice|Un|N
+379|Registeel|Un|N
+380|Latias|Un|0
+381|Latios|Un|100
+382|Kyogre|Un|N
+383|Groudon|Un|N
+384|Rayquaza|Un|N
+385|Jirachi|Un|N
+386|Deoxys|Un|N
+387|Turtwig|Mo,Gr|87.5
+388|Grotle|+
+389|Torterra|+
+390|Chimchar|Fi,Hu|87.5
+391|Monferno|+
+392|Infernape|+
+393|Piplup|W1,Fi|87.5
+394|Prinplup|+
+395|Empoleon|+
+396|Starly|Fl
+397|Staravia|+
+398|Staraptor|+
+399|Bidoof|W1,Fi
+400|Bibarel|+
+401|Kricketot|Bu
+402|Kricketune|+
+403|Shinx|Fi
+404|Luxio|+
+405|Luxray|+
+406|Budew|Un
+407|Roserade|Fa,Gr|50|406
+408|Cranidos|Mo|87.5
+409|Rampardos|+
+410|Shieldon|Mo|87.5
+411|Bastiodon|+
+412|Burmy|Bu
+413|Wormadam|Bu|0|412
+414|Mothim|Bu|100|412
+415|Combee|Bu|87.5
+416|Vespiquen|Bu|0|415
+417|Pachirisu|Fi
+418|Buizel|W1,Fi
+419|Floatzel|+
+420|Cherubi|Fa,Gr
+421|Cherrim|+
+422|Shellos|W1,Am
+423|Gastrodon|+
+424|Ambipom|Fi|50|190
+425|Drifloon|Am
+426|Drifblim|+
+427|Buneary|Fi,Hu
+428|Lopunny|+
+429|Mismagius|Am|50|200
+430|Honchkrow|Fl|50|198
+431|Glameow|Fi
+432|Purugly|+
+433|Chingling|Un
+434|Stunky|Fi
+435|Skuntank|+
+436|Bronzor|Mi|N
+437|Bronzong|+
+438|Bonsly|Un
+439|Mime Jr.|Un
+440|Happiny|Un|0
+441|Chatot|Fl
+442|Spiritomb|Am
+443|Gible|Mo,Dr
+444|Gabite|+
+445|Garchomp|+
+446|Munchlax|Un|87.5
+447|Riolu|Un|87.5
+448|Lucario|Fi,Hu|87.5|447
+449|Hippopotas|Fi
+450|Hippowdon|+
+451|Skorupi|Bu,W3
+452|Drapion|+
+453|Croagunk|Hu
+454|Toxicroak|+
+455|Carnivine|Gr
+456|Finneon|W2
+457|Lumineon|+
+458|Mantyke|Un
+459|Snover|Mo,Gr
+460|Abomasnow|+
+461|Weavile|Fi|50|215
+462|Magnezone|Mi|N|81
+463|Lickilicky|Mo|50|108
+464|Rhyperior|Mo,Fi|50|111
+465|Tangrowth|Gr|50|114
+466|Electivire|Hu|75|239
+467|Magmortar|Hu|75|240
+468|Togekiss|Fl,Fa|87.5|175
+469|Yanmega|Bu|50|193
+470|Leafeon|Fi|87.5|133
+471|Glaceon|+
+472|Gliscor|Bu|50|207
+473|Mamoswine|Fi|50|220
+474|Porygon-Z|Mi|N|137
+475|Gallade|Am,Hu|100|280
+476|Probopass|Mi|50|299
+477|Dusknoir|Am|50|355
+478|Froslass|Fa,Mi|0|361
+479|Rotom|Am|N
+480|Uxie|Un|N
+481|Mesprit|Un|N
+482|Azelf|Un|N
+483|Dialga|Un|N
+484|Palkia|Un|N
+485|Heatran|Un
+486|Regigigas|Un|N
+487|Giratina|Un|N
+488|Cresselia|Un|0
+489|Phione|Un|N
+490|Manaphy|Un|N
+491|Darkrai|Un|N
+492|Shaymin|Un|N
+493|Arceus|Un|N
+494|Victini|Un|N
+495|Snivy|Fi,Gr|87.5
+496|Servine|+
+497|Serperior|+
+498|Tepig|Fi|87.5
+499|Pignite|+
+500|Emboar|+
+501|Oshawott|Fi|87.5
+502|Dewott|+
+503|Samurott|+
+504|Patrat|Fi
+505|Watchog|+
+506|Lillipup|Fi
+507|Herdier|+
+508|Stoutland|+
+509|Purrloin|Fi
+510|Liepard|+
+511|Pansage|Fi|87.5
+512|Simisage|+
+513|Pansear|Fi|87.5
+514|Simisear|+
+515|Panpour|Fi|87.5
+516|Simipour|+
+517|Munna|Fi
+518|Musharna|+
+519|Pidove|Fl
+520|Tranquill|+
+521|Unfezant|+
+522|Blitzle|Fi
+523|Zebstrika|+
+524|Roggenrola|Mi
+525|Boldore|+
+526|Gigalith|+
+527|Woobat|Fl,Fi
+528|Swoobat|+
+529|Drilbur|Fi,Mi
+530|Excadrill|+
+531|Audino|Fa
+532|Timburr|Hu|75
+533|Gurdurr|+
+534|Conkeldurr|+
+535|Tympole|W1
+536|Palpitoad|+
+537|Seismitoad|+
+538|Throh|Hu|100
+539|Sawk|Hu|100
+540|Sewaddle|Bu
+541|Swadloon|+
+542|Leavanny|+
+543|Venipede|Bu
+544|Whirlipede|+
+545|Scolipede|+
+546|Cottonee|Fa,Gr
+547|Whimsicott|+
+548|Petilil|Gr|0
+549|Lilligant|+
+550|Basculin|W2
+551|Sandile|Fi
+552|Krokorok|+
+553|Krookodile|+
+554|Darumaka|Fi
+555|Darmanitan|+
+556|Maractus|Gr
+557|Dwebble|Bu,Mi
+558|Crustle|+
+559|Scraggy|Fi,Dr
+560|Scrafty|+
+561|Sigilyph|Fl
+562|Yamask|Mi,Am
+563|Cofagrigus|+
+564|Tirtouga|W1,W3|87.5
+565|Carracosta|+
+566|Archen|Fl,Dr|87.5
+567|Archeops|+
+568|Trubbish|Mi
+569|Garbodor|+
+570|Zorua|Fi|87.5
+571|Zoroark|+
+572|Minccino|Fi
+573|Cinccino|+
+574|Gothita|Hu
+575|Gothorita|+
+576|Gothitelle|+
+577|Solosis|Am
+578|Duosion|+
+579|Reuniclus|+
+580|Ducklett|W3,Fl
+581|Swanna|+
+582|Vanillite|Mi
+583|Vanillish|+
+584|Vanilluxe|+
+585|Deerling|Fi
+586|Sawsbuck|+
+587|Emolga|Fi
+588|Karrablast|Bu
+589|Escavalier|+
+590|Foongus|Gr
+591|Amoonguss|+
+592|Frillish|Am
+593|Jellicent|+
+594|Alomomola|W1
+595|Joltik|Bu
+596|Galvantula|+
+597|Ferroseed|Gr,Mi
+598|Ferrothorn|+
+599|Klink|Mi|N
+600|Klang|+
+601|Klinklang|+
+602|Tynamo|Am
+603|Eelektrik|+
+604|Eelektross|+
+605|Elgyem|Hu
+606|Beheeyem|+
+607|Litwick|Am
+608|Lampent|+
+609|Chandelure|+
+610|Axew|Mo,Dr
+611|Fraxure|+
+612|Haxorus|+
+613|Cubchoo|Fi
+614|Beartic|+
+615|Cryogonal|Mi
+616|Shelmet|Bu
+617|Accelgor|+
+618|Stunfisk|W1,Am
+619|Mienfoo|Fi,Hu
+620|Mienshao|+
+621|Druddigon|Dr,Mo
+622|Golett|Mi
+623|Golurk|+
+624|Pawniard|Hu
+625|Bisharp|+
+626|Bouffalant|Fi
+627|Rufflet|Fl|100
+628|Braviary|+
+629|Vullaby|Fl|0
+630|Mandibuzz|+
+631|Heatmor|Fi
+632|Durant|Bu
+633|Deino|Dr
+634|Zweilous|+
+635|Hydreigon|+
+636|Larvesta|Bu
+637|Volcarona|+
+638|Cobalion|Un|N
+639|Terrakion|Un|N
+640|Virizion|Un|N
+641|Tornadus|Un|100
+642|Thundurus|Un|100
+643|Reshiram|Un|N
+644|Zekrom|Un|N
+645|Landorus|Un|100
+646|Kyurem|Un|N
+647|Keldeo|Un|N
+648|Meloetta|Un|N
+649|Genesect|Un|N
+`;
+
+const POKEMON_DB = [];
+const DEX_BY_ID = {};
+
+(function buildDB() {
+  let prev = null;
+  RAW.trim().split('\n').forEach(line => {
+    const f = line.trim().split('|');
+    const id = parseInt(f[0], 10);
+    const name = f[1];
+    let entry;
+    if (f[2] === '+') {
+      entry = { id, name, babyId: prev.babyId, groupCodes: prev.groupCodes, gender: prev.gender };
+    } else {
+      let gender = 50;
+      if (f[3] === 'N') gender = 'N';
+      else if (f[3] !== undefined && f[3] !== '') gender = parseFloat(f[3]);
+      entry = {
+        id,
+        name,
+        babyId: f[4] ? parseInt(f[4], 10) : id,
+        groupCodes: f[2].split(','),
+        gender
+      };
+    }
+    entry.groups = entry.groupCodes.map(c => GROUP_NAMES[c]);
+    POKEMON_DB.push(entry);
+    DEX_BY_ID[id] = entry;
+    prev = entry;
+  });
+})();
+
+const NATURES = [
+  "Fuerte (Hardy)", "Huraña (Lonely)", "Audaz (Brave)", "Firme (Adamant)", "Pícara (Naughty)",
+  "Osada (Bold)", "Dócil (Docile)", "Plácida (Relaxed)", "Agitada (Impish)", "Floja (Lax)",
+  "Miedosa (Timid)", "Activa (Hasty)", "Seria (Serious)", "Alegre (Jolly)", "Ingenua (Naive)",
+  "Modesta (Modest)", "Afable (Mild)", "Mansa (Quiet)", "Tímida (Bashful)", "Alocada (Rash)",
+  "Serena (Calm)", "Amable (Gentle)", "Grosera (Sassy)", "Cauta (Careful)", "Rara (Quirky)"
+];
+
+const POWER_ITEM_STAT_MAP = {
+  'power-hp': 0,
+  'power-atk': 1,
+  'power-def': 2,
+  'power-spa': 3,
+  'power-spd': 4,
+  'power-spe': 5
+};
+
+const DEFAULTS = {
+  a: { id: 132, gender: 'genderless', item: 'none',      nature: 'Firme',  ability: '1', ivs: [31, 31, 20, 10, 15, 31] },
+  b: { id: 445, gender: 'female',     item: 'everstone', nature: 'Alegre', ability: '1', ivs: [31, 31, 20, 5, 15, 31] }
+};
+
+const selected = { a: DEFAULTS.a.id, b: DEFAULTS.b.id };
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const spriteUrl = id =>
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
+
+const esc = s => String(s).replace(/[&<>"']/g, c =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+function groupBadges(groups) {
+  return groups.map(g => {
+    const c = GROUP_COLORS[g] || '#9ca3af';
+    return `<span class="gbadge" style="color:${c};background:${c}22;border-color:${c}66">${esc(g)}</span>`;
+  }).join('');
+}
+
+function genderText(g) {
+  if (g === 'N') return 'Sin género';
+  if (g === 0) return '100% ♀';
+  if (g === 100) return '100% ♂';
+  return `${g}% ♂ / ${100 - g}% ♀`;
+}
+
+function clampIV(v) {
+  const n = parseInt(v, 10);
+  return isNaN(n) ? 0 : Math.min(31, Math.max(0, n));
+}
+
+/* =========================================================
+   SELECTOR DE POKÉMON (combobox con buscador)
+   ========================================================= */
+
+function filterPokemon(query) {
+  const q = norm(query.trim().replace(/^#/, ''));
+  if (!q) return POKEMON_DB;
+
+  const isNum = /^\d+$/.test(q);
+  const numQ = q.replace(/^0+/, '');
+  const scored = [];
+
+  POKEMON_DB.forEach(pk => {
+    const n = norm(pk.name);
+    let score = -1;
+    if (isNum && numQ && String(pk.id).startsWith(numQ)) score = 0;
+    else if (n.startsWith(q)) score = 0;
+    else if (n.includes(q)) score = 1;
+    else if (pk.groups.some(g => norm(g).includes(q))) score = 2;
+    if (score >= 0) scored.push({ pk, score });
+  });
+
+  scored.sort((x, y) => x.score - y.score || x.pk.id - y.pk.id);
+  return scored.map(s => s.pk);
+}
+
+function initCombo(p) {
+  const root = $(`combo-${p}`);
+  const input = $(`species-${p}`);
+  const list = $(`list-${p}`);
+  const count = root.querySelector('.combo-count');
+  let shown = [];
+  let active = -1;
+
+  const isOpen = () => root.classList.contains('open');
+
+  function rowHTML(pk, i) {
+    const cls = ['combo-item'];
+    if (pk.id === selected[p]) cls.push('selected');
+    if (i === active) cls.push('active');
+    return `<div class="${cls.join(' ')}" role="option" id="opt-${p}-${pk.id}" data-id="${pk.id}" data-i="${i}" aria-selected="${pk.id === selected[p]}">
+      <img src="${spriteUrl(pk.id)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+      <div class="combo-text">
+        <div class="combo-name"><span class="combo-num">#${String(pk.id).padStart(3, '0')}</span>${esc(pk.name)}</div>
+        <div class="combo-groups">${groupBadges(pk.groups)}</div>
+      </div>
+    </div>`;
+  }
+
+  function ensureVisible(el) {
+    if (!el) return;
+    const top = el.offsetTop;
+    const bottom = top + el.offsetHeight;
+    if (top < list.scrollTop) list.scrollTop = top;
+    else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight;
+  }
+
+  function setActive(i, scroll) {
+    const prevEl = list.children[active];
+    if (prevEl) prevEl.classList.remove('active');
+    active = i;
+    const el = list.children[active];
+    if (el) {
+      el.classList.add('active');
+      input.setAttribute('aria-activedescendant', el.id);
+      if (scroll) ensureVisible(el);
+    }
+  }
+
+  function render(query) {
+    shown = filterPokemon(query);
+    const hasQuery = query.trim() !== '';
+    count.textContent = hasQuery
+      ? `${shown.length} de ${POKEMON_DB.length} Pokémon`
+      : `${POKEMON_DB.length} Pokémon`;
+
+    if (!shown.length) {
+      list.innerHTML = '<div class="combo-empty">Sin resultados.<br>Prueba con otro nombre, número o grupo huevo.</div>';
+      active = -1;
+      return;
+    }
+
+    let start = 0;
+    if (!hasQuery) {
+      const idx = shown.findIndex(pk => pk.id === selected[p]);
+      start = idx >= 0 ? idx : 0;
+    }
+    active = start;
+    list.innerHTML = shown.map(rowHTML).join('');
+    list.scrollTop = 0;
+    if (!hasQuery && start > 0) {
+      const el = list.children[start];
+      if (el) list.scrollTop = Math.max(0, el.offsetTop - list.clientHeight / 2 + el.offsetHeight / 2);
+    }
+    const el = list.children[active];
+    if (el) input.setAttribute('aria-activedescendant', el.id);
+  }
+
+  function open() {
+    if (isOpen()) return;
+    root.classList.add('open');
+    input.setAttribute('aria-expanded', 'true');
+    render('');
+  }
+
+  function close() {
+    root.classList.remove('open');
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+    input.value = DEX_BY_ID[selected[p]].name;
+  }
+
+  function choose(id) {
+    setSpecies(p, id);
+    close();
+    input.blur();
+    refresh();
+  }
+
+  input.addEventListener('focus', () => {
+    open();
+    setTimeout(() => input.select(), 0);
+  });
+
+  input.addEventListener('click', () => {
+    if (!isOpen()) open();
+  });
+
+  input.addEventListener('input', () => {
+    if (!isOpen()) root.classList.add('open');
+    render(input.value);
+  });
+
+  input.addEventListener('blur', close);
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (!isOpen()) { open(); return; }
+      if (shown.length) setActive(Math.min(shown.length - 1, active + 1), true);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (shown.length) setActive(Math.max(0, active - 1), true);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (isOpen() && shown[active]) choose(shown[active].id);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      input.blur();
+    }
+  });
+
+  list.addEventListener('mousedown', e => {
+    e.preventDefault();
+    const item = e.target.closest('.combo-item');
+    if (item) choose(parseInt(item.dataset.id, 10));
+  });
+
+  list.addEventListener('mousemove', e => {
+    const item = e.target.closest('.combo-item');
+    if (item) {
+      const i = parseInt(item.dataset.i, 10);
+      if (i !== active) setActive(i, false);
+    }
+  });
+}
+
+function setSpecies(p, id) {
+  selected[p] = id;
+  $(`species-${p}`).value = DEX_BY_ID[id].name;
+  applyGenderRules(p);
+}
+
+function applyGenderRules(p) {
+  const info = DEX_BY_ID[selected[p]];
+  const sel = $(`gender-${p}`);
+  let allowed;
+  if (info.gender === 'N') allowed = ['genderless'];
+  else if (info.gender === 0) allowed = ['female'];
+  else if (info.gender === 100) allowed = ['male'];
+  else allowed = ['male', 'female'];
+
+  Array.from(sel.options).forEach(o => { o.disabled = !allowed.includes(o.value); });
+
+  if (!allowed.includes(sel.value)) {
+    sel.value = allowed.length === 1 ? allowed[0] : (p === 'a' ? 'male' : 'female');
+  }
+}
+
+/* =========================================================
+   INICIALIZACIÓN
+   ========================================================= */
+
+function init() {
+  populateNatures('nature-a');
+  populateNatures('nature-b');
+  initCombo('a');
+  initCombo('b');
+  applyDefaults('a');
+  applyDefaults('b');
+  setupEventListeners();
+  refresh();
+}
+
+function populateNatures(selectId) {
+  const select = $(selectId);
+  NATURES.forEach(n => {
+    const opt = document.createElement('option');
+    opt.value = n;
+    opt.textContent = n;
+    select.appendChild(opt);
+  });
+}
+
+function applyDefaults(p) {
+  const d = DEFAULTS[p];
+  setSpecies(p, d.id);
+  $(`gender-${p}`).value = d.gender;
+  $(`item-${p}`).value = d.item;
+  $(`nature-${p}`).value = NATURES.find(n => n.startsWith(d.nature + ' '));
+  $(`ability-${p}`).value = d.ability;
+  $(`shiny-${p}`).checked = false;
+  $(`alpha-${p}`).checked = false;
+  d.ivs.forEach((v, i) => { $(`iv-${p}-${i}`).value = v; });
+  [1, 2, 3, 4].forEach(n => { $(`move-${p}-${n}`).value = ''; });
+}
+
+function refresh() {
+  updateSimulation();
+  updateIVClasses();
+}
+
+function setupEventListeners() {
+  document.querySelectorAll('input:not(.combo-input), select').forEach(el => {
+    el.addEventListener('input', refresh);
+    el.addEventListener('change', refresh);
+  });
+
+  document.querySelectorAll('.iv-input').forEach(el => {
+    el.addEventListener('change', () => { el.value = clampIV(el.value); refresh(); });
+  });
+
+  $('reset-btn').addEventListener('click', resetSimulator);
+}
+
+function setAllIVs(parent, val) {
+  for (let i = 0; i < 6; i++) {
+    $(`iv-${parent}-${i}`).value = val;
+  }
+  refresh();
+}
+
+function updateIVClasses() {
+  ['a', 'b'].forEach(parent => {
+    for (let i = 0; i < 6; i++) {
+      const el = $(`iv-${parent}-${i}`);
+      const val = parseInt(el.value, 10);
+      el.classList.remove('iv-31', 'iv-30');
+      if (val === 31) el.classList.add('iv-31');
+      else if (val === 30) el.classList.add('iv-30');
+    }
+  });
+}
+
+/* =========================================================
+   LÓGICA DE LA SIMULACIÓN
+   ========================================================= */
+
+function readParent(p) {
+  return {
+    info: DEX_BY_ID[selected[p]],
+    gender: $(`gender-${p}`).value,
+    item: $(`item-${p}`).value,
+    nature: $(`nature-${p}`).value,
+    ability: $(`ability-${p}`).value,
+    shiny: $(`shiny-${p}`).checked,
+    alpha: $(`alpha-${p}`).checked,
+    ivs: Array.from({ length: 6 }, (_, i) => clampIV($(`iv-${p}-${i}`).value)),
+    moves: [1, 2, 3, 4].map(n => $(`move-${p}-${n}`).value.trim()).filter(Boolean)
+  };
+}
+
+function genderFee(baby, choice) {
+  if (choice === 'random') return 0;
+  const m = baby.gender;
+  if (m === 'N' || m === 0 || m === 100) return 0;
+  if (m === 50) return 5000;
+  const wanted = choice === 'male' ? m : 100 - m;
+  if (wanted >= 75) return 5000;
+  if (wanted === 25) return 9000;
+  return 21000;
+}
+
+function updateSimulation() {
+  const parentA = readParent('a');
+  const parentB = readParent('b');
+
+  $('sprite-a').src = spriteUrl(parentA.info.id);$('sprite-b').src = spriteUrl(parentB.info.id);
+  $('groups-a').innerHTML = groupBadges(parentA.info.groups);$('groups-b').innerHTML = groupBadges(parentB.info.groups);
+
+  const compatibility = checkCompatibility(parentA, parentB);
+
+  const banner = $('incompatible-banner');
+  const resultContent = $('result-content');
+  const alphaWarning = $('alpha-warning-banner');
+
+  if (!compatibility.compatible) {
+    banner.style.display = 'block';
+    $('incompatible-reason').textContent = compatibility.reason;
+    resultContent.style.opacity = '0.3';
+    resultContent.style.pointerEvents = 'none';
+    alphaWarning.style.display = 'none';
+
+    $('summary-status').textContent = '❌ Incompatible';
+    $('summary-status').className = 'value danger';$('summary-cost').textContent = '$0';$('summary-species').textContent = '---';
+    return;
+  }
+
+  banner.style.display = 'none';
+  resultContent.style.opacity = '1';
+  resultContent.style.pointerEvents = 'auto';
+
+  $('summary-status').textContent = '✅ Compatible';
+  $('summary-status').className = 'value ready';
+
+  alphaWarning.style.display =
+    ((parentA.alpha || parentB.alpha) && !(parentA.alpha && parentB.alpha)) ? 'block' : 'none';
+
+  const dittoA = parentA.info.groups.includes('Ditto');
+  const dittoB = parentB.info.groups.includes('Ditto');
+  let motherInfo;
+  if (dittoA) motherInfo = parentB.info;
+  else if (dittoB) motherInfo = parentA.info;
+  else motherInfo = parentA.gender === 'female' ? parentA.info : parentB.info;
+
+  const babyInfo = DEX_BY_ID[motherInfo.babyId];
+  $('child-name').textContent = babyInfo.name;
+  $('summary-species').textContent = babyInfo.name;
+  $('sprite-child').src = spriteUrl(babyInfo.id);$('child-ratio').textContent = `Género de la cría: ${genderText(babyInfo.gender)}`;
+
+  let childBadgesHTML = groupBadges(motherInfo.groups);
+  if (parentA.shiny && parentB.shiny) {
+    childBadgesHTML += ' <span class="badge badge-shiny">✨ Shiny</span>';
+  }
+  if (parentA.alpha && parentB.alpha) {
+    childBadgesHTML += ' <span class="badge badge-alpha">🔴 Alfa</span>';
+  }
+  $('child-badges').innerHTML = childBadgesHTML;
+
+  const childIVs = [];
+  let guaranteed31Count = 0;
+
+  for (let i = 0; i < 6; i++) {
+    const powerA = POWER_ITEM_STAT_MAP[parentA.item] === i;
+    const powerB = POWER_ITEM_STAT_MAP[parentB.item] === i;
+    let finalIV;
+
+    if (powerA && !powerB) {
+      finalIV = parentA.ivs[i];
+    } else if (powerB && !powerA) {
+      finalIV = parentB.ivs[i];
+    } else if (parentA.ivs[i] === parentB.ivs[i]) {
+      finalIV = parentA.ivs[i];
+    } else {
+      finalIV = Math.floor((parentA.ivs[i] + parentB.ivs[i]) / 2);
+    }
+
+    childIVs.push(finalIV);
+    if (finalIV === 31) guaranteed31Count++;
+  }
+
+  $('summary-31s').textContent = `${guaranteed31Count}x 31`;
+
+  $('child-iv-row').innerHTML = childIVs.map(iv => {
+    let cssClass = '';
+    if (iv === 31) cssClass = 'iv-31';
+    else if (iv === 30) cssClass = 'iv-30';
+    return `<td><div class="iv-input ${cssClass}" style="margin:auto; padding:6px 2px;">${iv}</div></td>`;
+  }).join('');
+
+  const natureDisplay = $('child-nature-display');
+  const shortA = parentA.nature.split(' (')[0];
+  const shortB = parentB.nature.split(' (')[0];
+  let natureResult = 'Aleatoria (1 de 25)';
+  let natureShort = 'Aleatoria';
+
+  if (parentA.item === 'everstone' && parentB.item === 'everstone') {
+    natureResult = `50% ${parentA.nature} / 50% ${parentB.nature}`;
+    natureShort = `${shortA} / ${shortB}`;
+    natureDisplay.style.color = 'var(--gold)';
+  } else if (parentA.item === 'everstone') {
+    natureResult = `${parentA.nature} (100% Garantizada)`;
+    natureShort = shortA;
+    natureDisplay.style.color = 'var(--ready)';
+  } else if (parentB.item === 'everstone') {
+    natureResult = `${parentB.nature} (100% Garantizada)`;
+    natureShort = shortB;
+    natureDisplay.style.color = 'var(--ready)';
+  } else {
+    natureDisplay.style.color = 'var(--muted)';
+  }
+
+  natureDisplay.textContent = natureResult;
+  $('summary-nature').textContent = natureShort;
+
+  $('child-ability-display').textContent =
+    (parentA.ability === 'ha' || parentB.ability === 'ha')
+      ? '80% Habilidad Oculta (HA) / 20% Normal'
+      : '80% Habilidad Materna / 20% Secundaria';
+
+  const allMoves = Array.from(new Set([...parentA.moves, ...parentB.moves]));
+  $('child-moves-list').innerHTML = allMoves.length
+    ? allMoves.map(m => `<span class="move-tag">⚔️ ${esc(m)}</span>`).join('')
+    : `<span class="move-tag" style="color:var(--muted);">- Sin movimientos -</span>`;
+
+  let powerItemCost = 0;
+  if (parentA.item.startsWith('power-')) powerItemCost += 10000;
+  if (parentB.item.startsWith('power-')) powerItemCost += 10000;
+
+  let everstoneCost = 0;
+  if (parentA.item === 'everstone') everstoneCost += 10000;
+  if (parentB.item === 'everstone') everstoneCost += 10000;
+
+  const genderSelect = $('child-gender-select');
+  const fixedGender = babyInfo.gender === 'N' || babyInfo.gender === 0 || babyInfo.gender === 100;
+  if (fixedGender) genderSelect.value = 'random';
+  genderSelect.disabled = fixedGender;
+
+  const fee = genderFee(babyInfo, genderSelect.value);
+  const totalCost = powerItemCost + everstoneCost + fee;
+
+  $('cost-power-items').textContent = `$${powerItemCost.toLocaleString()}`;
+  $('cost-everstone').textContent = `$${everstoneCost.toLocaleString()}`;
+  $('cost-gender').textContent = `$${fee.toLocaleString()}`;
+  $('cost-total').textContent = `$${totalCost.toLocaleString()}`;
+  $('summary-cost').textContent = `$${totalCost.toLocaleString()}`;
+}
+
+function checkCompatibility(a, b) {
+  const isDittoA = a.info.groups.includes('Ditto');
+  const isDittoB = b.info.groups.includes('Ditto');
+
+  if (a.info.groups.includes('No Eggs Discovered') || b.info.groups.includes('No Eggs Discovered')) {
+    return { compatible: false, reason: "Los Pokémon del grupo 'No Eggs Discovered' no pueden criar." };
+  }
+
+  if (isDittoA && isDittoB) {
+    return { compatible: false, reason: 'Dos Ditto no pueden criar entre sí.' };
+  }
+
+  if (!isDittoA && !isDittoB && a.gender === b.gender) {
+    return { compatible: false, reason: 'Ambos padres deben ser de distinto sexo (Macho + Hembra).' };
+  }
+
+  const genderlessNonDitto = x => x.gender === 'genderless' && !x.info.groups.includes('Ditto');
+  if ((genderlessNonDitto(a) && !isDittoB) || (genderlessNonDitto(b) && !isDittoA)) {
+    return { compatible: false, reason: 'Los Pokémon Sin Género solo pueden criar con un Ditto.' };
+  }
+
+  if (!isDittoA && !isDittoB) {
+    const sharesGroup = a.info.groups.some(g => b.info.groups.includes(g));
+    if (!sharesGroup) {
+      return { compatible: false, reason: 'No comparten ningún Grupo Huevo en común.' };
+    }
+  }
+
+  if ((a.shiny || b.shiny) && !(a.shiny && b.shiny)) {
+    return { compatible: false, reason: 'En PokeMMO, un Pokémon Shiny SOLO puede criar con otro Pokémon Shiny.' };
+  }
+
+  return { compatible: true, reason: '' };
+}
+
+function resetSimulator() {
+  applyDefaults('a');
+  applyDefaults('b');
+  $('child-gender-select').value = 'random';
+  refresh();
+}
+
+window.addEventListener('DOMContentLoaded', init);
+
+</script>
+
+</body>
+</html>
