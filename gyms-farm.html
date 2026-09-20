@@ -17,6 +17,7 @@
     --border: #374151;
     --danger: #dc2626;
     --gold: #f59e0b;
+    --ready: #22c55e;
   }
 
   * {
@@ -212,6 +213,37 @@
     font-size: 13px;
   }
 
+  /* ESTILOS DE LA COLUMNA TIEMPO */
+  .time-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px;
+  }
+
+  .time-done {
+    color: var(--muted);
+  }
+
+  .time-respawn {
+    color: #38bdf8;
+    font-weight: 600;
+  }
+
+  .time-countdown {
+    color: #facc15;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .time-ready-badge {
+    color: #4ade80;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
   .type-badge {
     display: inline-flex;
     align-items: center;
@@ -287,7 +319,7 @@
       <h1>🎮 PokeMMO — Gym Farm Tracker</h1>
       <div class="subtitle">
         Marca los gimnasios que ya has farmeado.
-        El estado se guarda automáticamente en este navegador.
+        El estado y tiempos de cooldown (18h) se guardan automáticamente.
       </div>
     </div>
 
@@ -331,12 +363,12 @@
 
   <div class="save-status">
     💾 Guardado automático: puedes cerrar el HTML y abrirlo de nuevo
-    sin perder las marcas en este mismo navegador.
+    sin perder las marcas ni los tiempos de cooldown.
   </div>
 
   <div class="danger-note">
     ⚠️ Si borras los datos/localStorage del navegador, también se borrarán
-    las marcas guardadas.
+    las marcas e historiales de tiempo.
   </div>
 
 </div>
@@ -347,6 +379,8 @@
    DATOS DE LOS GIMNASIOS
    [número, ciudad ES, ciudad EN, líder, tipo, recompensa Base ($), disponible (boolean)]
    ========================================================= */
+
+const GYM_COOLDOWN_MS = 18 * 60 * 60 * 1000; // 18 horas en milisegundos
 
 const regions = {
 
@@ -434,10 +468,72 @@ function formatMoney(amount) {
   return "$" + amount.toLocaleString("es-ES");
 }
 
-function save() {
+function formatDate(timestamp) {
+  if (!timestamp) return "-";
+  const date = new Date(timestamp);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${hours}:${minutes} (${day}/${month})`;
+}
+
+function renderTimeCell(key, isAvailable) {
+  if (!isAvailable) return "<span>-</span>";
+
+  let timeVal = state[key];
+  if (!timeVal) return `<span class="time-done">-</span>`;
+
+  // Si el valor guardado antiguo era un booleano 'true', asignamos el tiempo actual
+  if (timeVal === true) {
+    timeVal = Date.now();
+    state[key] = timeVal;
+    saveState();
+  }
+
+  const completedTime = Number(timeVal);
+  const respawnTime = completedTime + GYM_COOLDOWN_MS;
+  const now = Date.now();
+  const diff = respawnTime - now;
+
+  if (diff <= 0) {
+    return `<div class="time-box">
+              <span class="time-ready-badge">🟢 ¡Disponible!</span>
+              <span class="time-done">Hecho: ${formatDate(completedTime)}</span>
+            </div>`;
+  }
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  return `<div class="time-box">
+            <span class="time-done">Marcado: ${formatDate(completedTime)}</span>
+            <span class="time-respawn">Disponible: ${formatDate(respawnTime)}</span>
+            <span class="time-countdown">⏳ Reaparece en: ${hours}h ${minutes}m</span>
+          </div>`;
+}
+
+function updateAllTimers() {
+  Object.keys(regions).forEach(region => {
+    regions[region].forEach((gym, i) => {
+      const key = `${region}-${i}`;
+      const cell = document.getElementById(`time-cell-${key}`);
+      if (cell) {
+        cell.innerHTML = renderTimeCell(key, gym[6] !== false);
+      }
+    });
+  });
+}
+
+function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function save() {
+  saveState();
   updateSummary();
   updateRegionProgress();
+  updateAllTimers();
 }
 
 function updateSummary() {
@@ -498,6 +594,8 @@ function createTypeBadge(type) {
 function render() {
   const tabs = document.getElementById("tabs");
   const regionsEl = document.getElementById("regions");
+  tabs.innerHTML = "";
+  regionsEl.innerHTML = "";
 
   Object.keys(regions).forEach((region, index) => {
 
@@ -535,6 +633,7 @@ function render() {
             <th>Líder / Leader</th>
             <th>Tipo / Type</th>
             <th>Recompensa</th>
+            <th>Horario / Cooldown (18h)</th>
             <th class="check">Hecho</th>
           </tr>
         </thead>
@@ -578,6 +677,9 @@ function render() {
               : `<span class="reward-base">No disponible</span>`}
           </div>
         </td>
+        <td id="time-cell-${key}">
+          ${renderTimeCell(key, isAvailable)}
+        </td>
         <td class="check">
           ${isAvailable 
             ? `<input type="checkbox" ${state[key] ? "checked" : ""} aria-label="Marcar ${leader}">`
@@ -589,13 +691,13 @@ function render() {
 
       if (checkbox) {
         checkbox.addEventListener("change", () => {
-          state[key] = checkbox.checked;
-          tr.classList.toggle("done", checkbox.checked);
-
-          if (!checkbox.checked) {
+          if (checkbox.checked) {
+            state[key] = Date.now();
+            tr.classList.add("done");
+          } else {
             delete state[key];
+            tr.classList.remove("done");
           }
-
           save();
         });
       }
@@ -612,7 +714,7 @@ function render() {
 
 /* RESET */
 document.getElementById("reset").addEventListener("click", () => {
-  if (confirm("¿Seguro que quieres borrar TODOS los gimnasios marcados?")) {
+  if (confirm("¿Seguro que quieres borrar TODOS los gimnasios marcados y sus tiempos?")) {
     state = {};
     localStorage.removeItem(STORAGE_KEY);
 
@@ -621,13 +723,16 @@ document.getElementById("reset").addEventListener("click", () => {
       cb.closest("tr").classList.remove("done");
     });
 
-    updateSummary();
-    updateRegionProgress();
+    save();
   }
 });
 
-/* INICIAR */
+/* INICIAR Y ACTUALIZAR CADA MINUTO */
 render();
+
+setInterval(() => {
+  updateAllTimers();
+}, 60000);
 
 </script>
 
