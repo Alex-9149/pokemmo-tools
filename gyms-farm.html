@@ -368,6 +368,114 @@
     margin-top: 10px;
   }
 
+  /* ── Custom Confirm Modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .modal-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transform: translateY(-20px) scale(0.97);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease;
+    opacity: 0;
+  }
+
+  .modal-overlay.visible .modal-box {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+
+  .modal-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.15);
+    border: 2px solid rgba(220, 38, 38, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 4px;
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0;
+    text-align: center;
+  }
+
+  .modal-body {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .modal-body strong {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .modal-btn {
+    flex: 1;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 0;
+    transition: filter 0.15s ease, transform 0.1s ease;
+  }
+
+  .modal-btn:hover { filter: brightness(1.12); }
+  .modal-btn:active { transform: scale(0.97); }
+
+  .modal-btn-cancel {
+    background: var(--panel2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .modal-btn-confirm {
+    background: var(--danger);
+    color: #fff;
+  }
+
   @media (max-width: 750px) {
     body { padding-bottom: 24px; }
     .navbar { padding: 1rem; }
@@ -413,7 +521,7 @@
     </div>
 
     <div>
-      <button id="reset">↻ Reset — Borrar todos</button>
+      <button id="reset">↻ Reset — Borrar región</button>
     </div>
   </header>
 
@@ -456,6 +564,18 @@
     ⚠️ Si borras el historial o almacenamiento local del navegador, se borrarán las marcas.
   </div>
 
+</div>
+
+<!-- Custom Confirm Modal -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <p class="modal-title" id="modalTitle">Borrar región</p>
+    <p class="modal-body" id="modalBody">¿Estás seguro?</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancelar</button>
+      <button class="modal-btn modal-btn-confirm" id="modalConfirm">Sí, borrar</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -677,6 +797,7 @@ function render() {
       document.querySelectorAll(".region").forEach(x => x.classList.remove("active"));
       tab.classList.add("active");
       document.getElementById(`region-${region}`).classList.add("active");
+      updateResetLabel();
     };
 
     tabs.appendChild(tab);
@@ -778,15 +899,61 @@ function render() {
   updateAllTimers();
 }
 
-document.getElementById("reset").addEventListener("click", () => {
-  if (confirm("¿Seguro que deseas reiniciar todos los datos y contadores?")) {
-    state = {};
+function getActiveRegion() {
+  const activeTab = document.querySelector(".tab.active");
+  return activeTab ? activeTab.dataset.region : null;
+}
+
+function updateResetLabel() {
+  const region = getActiveRegion();
+  const btn = document.getElementById("reset");
+  btn.textContent = region ? `↻ Reset — Borrar ${region}` : "↻ Reset — Borrar región";
+}
+
+/* ── Custom Modal Logic ── */
+const confirmModal   = document.getElementById("confirmModal");
+const modalTitle     = document.getElementById("modalTitle");
+const modalBody      = document.getElementById("modalBody");
+const modalConfirmBtn = document.getElementById("modalConfirm");
+const modalCancelBtn  = document.getElementById("modalCancel");
+
+let _modalResolve = null;
+
+function showConfirmModal(region) {
+  modalTitle.textContent = `Borrar ${region}`;
+  modalBody.innerHTML = `¿Seguro que deseas reiniciar todos los gimnasios de <strong>${region}</strong>? Esta acción no se puede deshacer.`;
+  confirmModal.classList.add("visible");
+  return new Promise(resolve => { _modalResolve = resolve; });
+}
+
+function closeModal(result) {
+  confirmModal.classList.remove("visible");
+  if (_modalResolve) { _modalResolve(result); _modalResolve = null; }
+}
+
+modalConfirmBtn.addEventListener("click", () => closeModal(true));
+modalCancelBtn.addEventListener("click",  () => closeModal(false));
+confirmModal.addEventListener("click", e => { if (e.target === confirmModal) closeModal(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && confirmModal.classList.contains("visible")) closeModal(false); });
+
+document.getElementById("reset").addEventListener("click", async () => {
+  const region = getActiveRegion();
+  if (!region) return;
+  const confirmed = await showConfirmModal(region);
+  if (confirmed) {
+    regions[region].forEach((_, i) => {
+      delete state[`${region}-${i}`];
+    });
     saveState();
     render();
+    // Restore active tab after re-render
+    const tab = document.querySelector(`.tab[data-region="${region}"]`);
+    if (tab) tab.click();
   }
 });
 
 render();
+updateResetLabel();
 setInterval(updateAllTimers, 30000);
 </script>
 </body>
