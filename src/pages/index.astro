@@ -1,0 +1,359 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="PokeMMO Tools — Tu Centro de Recursos"
+  description="Plataforma de herramientas y guías para jugadores de PokeMMO. Gym Tracker, Farmeo de EVs, Crianza y más."
+  activePage="index"
+>
+
+  <!-- ═══════════════════════════════════════ HERO ══════════════════════════════════════ -->
+  <header class="relative overflow-hidden">
+    <!-- Animated particles background -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      <div class="absolute top-1/4 left-1/4 w-64 h-64 rounded-full opacity-10 blur-3xl animate-pulse"
+           style="background: radial-gradient(circle, #3b82f6, transparent);"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-8 blur-3xl"
+           style="background: radial-gradient(circle, #8b5cf6, transparent); animation: pulse 4s ease-in-out infinite 1s;"></div>
+      <div class="absolute top-1/2 right-1/3 w-40 h-40 rounded-full opacity-6 blur-2xl"
+           style="background: radial-gradient(circle, #06b6d4, transparent); animation: pulse 3s ease-in-out infinite 0.5s;"></div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-6 pt-20 pb-16 text-center relative">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
+           style="background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.3); color: #93c5fd;">
+        <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#3b82f6]"></span>
+        Herramientas para Entrenadores
+      </div>
+
+      <!-- Heading -->
+      <h1 class="font-outfit text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight tracking-tight mb-6">
+        Tu centro de recursos<br>
+        <span style="background: linear-gradient(135deg, #60a5fa 10%, #a78bfa 60%, #f472b6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+          para PokeMMO
+        </span>
+      </h1>
+
+      <p class="text-slate-400 text-lg sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10">
+        Optimiza tu farmeo, planifica tu crianza y saca el máximo provecho a cada sesión de juego
+        con herramientas diseñadas por y para la comunidad.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-wrap gap-4 justify-center">
+        <a href="/gyms-farm"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(59,130,246,0.4)]"
+           style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
+           Empezar con Gimnasios
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a href="#herramientas"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-slate-300 transition-all duration-300 hover:text-white hover:bg-white/8"
+           style="border: 1px solid rgba(255,255,255,0.1);">
+          Ver todas las herramientas
+        </a>
+      </div>
+
+      <!-- Stats bar -->
+      <div class="flex flex-wrap justify-center gap-8 mt-14 pt-10" style="border-top: 1px solid rgba(255,255,255,0.06);">
+        {[
+          { value: '5', label: 'Regiones cubiertas' },
+          { value: '41+', label: 'Gimnasios rastreados' },
+          { value: '30+', label: 'Spots de EVs' },
+          { value: '900+', label: 'Pokémon en crianza' },
+        ].map(stat => (
+          <div class="text-center">
+            <div class="font-outfit text-3xl font-extrabold text-white">{stat.value}</div>
+            <div class="text-xs text-slate-500 mt-1 uppercase tracking-wide">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════ QUÉ ES POKEMMO ════════════════════════════════════════ -->
+  <section class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="text-center mb-14">
+        <p class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-3">El juego</p>
+        <h2 class="font-outfit text-4xl font-extrabold text-white mb-4">¿Qué es PokeMMO?</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">Un MMO fan-made que combina los ROMs de los juegos principales de Pokémon en un mundo online y persistente.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+        <!-- Left: description blocks -->
+        <div class="flex flex-col gap-5">
+          {[
+            {
+              icon: '',
+              title: 'Multijugador en tiempo real',
+              desc: 'Miles de jugadores comparten las mismas rutas simultáneamente. La economía, el comercio y los combates son completamente online.',
+            },
+            {
+              icon: '',
+              title: '5 regiones jugables',
+              desc: 'Kanto, Johto, Hoenn, Sinnoh y Teselia (Unova) están disponibles en un mismo cliente, con sus respectivos gimnasios y Élite Cuatro.',
+            },
+            {
+              icon: '',
+              title: 'Economía player-driven',
+              desc: 'El dinero del juego (Pokéyenes) se gana principalmente farmeando gimnasios o vendiendo objetos. Cada decisión tiene impacto económico.',
+            },
+            {
+              icon: '',
+              title: 'Crianza competitiva',
+              desc: 'Los IVs, naturalezas y movimientos huevo determinan si un Pokémon es competitivo. La crianza es una de las mecánicas más profundas del juego.',
+            },
+          ].map(item => (
+            <div class="flex gap-4 p-5 rounded-2xl transition-colors hover:bg-white/3"
+                 style="border: 1px solid rgba(255,255,255,0.06);">
+              <div class="text-3xl flex-shrink-0">{item.icon}</div>
+              <div>
+                <h3 class="font-semibold text-white mb-1">{item.title}</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- Right: region cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {[
+            { name: 'Kanto',   emoji: '🏔️', color: '#ef4444', games: 'FR/LG' },
+            { name: 'Johto',   emoji: '🌸', color: '#10b981', games: 'HG/SS' },
+            { name: 'Hoenn',   emoji: '🌊', color: '#3b82f6', games: 'R/S/E' },
+            { name: 'Sinnoh',  emoji: '❄️', color: '#8b5cf6', games: 'D/P/Pt' },
+            { name: 'Teselia', emoji: '⚡', color: '#f59e0b', games: 'B/W' },
+            { name: 'Próximo', emoji: '🔒', color: '#475569', games: '???' },
+          ].map(r => (
+            <div class="rounded-2xl p-4 flex flex-col items-center gap-2 text-center cursor-default transition-transform hover:scale-105"
+                 style={`background: ${r.color}14; border: 1px solid ${r.color}33;`}>
+              <span class="text-3xl">{r.emoji}</span>
+              <span class="font-bold text-sm text-white">{r.name}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full font-mono"
+                    style={`background: ${r.color}22; color: ${r.color};`}>
+                {r.games}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═════════════════════ POR QUÉ ESTAS HERRAMIENTAS ═════════════════════════════ -->
+  <section class="py-20 px-6" style="background: rgba(22, 30, 49, 0.4);">
+    <div class="max-w-5xl mx-auto text-center">
+
+      <p class="text-xs font-bold uppercase tracking-widest text-purple-400 mb-3">La plataforma</p>
+      <h2 class="font-outfit text-4xl font-extrabold text-white mb-4">¿Qué ofrece esta plataforma?</h2>
+      <p class="text-slate-400 max-w-xl mx-auto mb-14">
+        Herramientas construidas con los datos reales del juego para tomar mejores decisiones.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {[
+          {
+            icon: '⚔️',
+            title: 'Farmeo Optimizado',
+            color: '#3b82f6',
+            desc: 'Rastrea gimnasios con cooldowns de 18h y calcula tus ganancias con y sin Amuleto Moneda. Nunca pierdas un respawn.',
+          },
+          {
+            icon: '⚡',
+            title: 'Guías de Entrenamiento',
+            color: '#f59e0b',
+            desc: 'Spots de EVs por hordas verificados en todas las regiones, con detector de estaciones en tiempo real para Teselia.',
+          },
+          {
+            icon: '🧬',
+            title: 'Simulador de Crianza',
+            color: '#8b5cf6',
+            desc: 'Calcula la compatibilidad de grupos huevo, herencia de IVs, naturalezas por Braza Destino y movimientos heredados.',
+          },
+        ].map(pillar => (
+          <div class="p-7 rounded-2xl flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-1"
+               style={`background: rgba(22,30,49,0.8); border: 1px solid ${pillar.color}22; box-shadow: 0 0 0 0 ${pillar.color}00;`}
+               onmouseenter={`this.style.boxShadow='0 8px 32px ${pillar.color}22'`}
+               onmouseleave={`this.style.boxShadow='0 0 0 0 ${pillar.color}00'`}>
+            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl mb-5"
+                 style={`background: ${pillar.color}18; border: 1px solid ${pillar.color}33;`}>
+              {pillar.icon}
+            </div>
+            <h3 class="font-outfit font-bold text-lg text-white mb-3">{pillar.title}</h3>
+            <p class="text-sm text-slate-400 leading-relaxed">{pillar.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════ HERRAMIENTAS ══════════════════════════════════════ -->
+  <section id="herramientas" class="py-20 px-6">
+    <div class="max-w-6xl mx-auto">
+
+      <div class="flex items-center gap-4 mb-10">
+        <h2 class="font-outfit text-2xl font-bold text-white whitespace-nowrap">Herramientas Disponibles</h2>
+        <div class="h-px flex-1" style="background: rgba(255,255,255,0.06);"></div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <!-- Gym Farm Tracker -->
+        <a href="/gyms-farm" id="card-gyms-farm"
+           class="group block p-7 rounded-2xl no-underline text-inherit transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+           style="background: rgba(22, 30, 49, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);">
+          <div class="absolute top-0 left-0 right-0 h-0.5 transition-all duration-300"
+               style="background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div>
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-13 h-13 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                 style="background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3);">⚔️</div>
+            <div>
+              <h3 class="font-outfit text-lg font-bold text-white mb-1">Gym Farm Tracker</h3>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">ACTIVO</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-5">
+            Seguimiento en tiempo real del farmeo de gimnasios con cooldowns de 18h y cálculo automático de dinero con y sin Amuleto Moneda.
+          </p>
+          <div class="flex justify-between items-center pt-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
+            <span class="text-xs text-slate-500">Herramienta diaria</span>
+            <span class="text-blue-400 font-semibold text-sm flex items-center gap-1 transition-all duration-200 group-hover:gap-2">
+              Abrir →
+            </span>
+          </div>
+        </a>
+
+        <!-- EV Farm -->
+        <a href="/evs-farm" id="card-evs-farm"
+           class="group block p-7 rounded-2xl no-underline text-inherit transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+           style="background: rgba(22, 30, 49, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);">
+          <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, #f59e0b, #ef4444);"></div>
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-13 h-13 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                 style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3);">⚡</div>
+            <div>
+              <h3 class="font-outfit text-lg font-bold text-white mb-1">Farmeo de EVs</h3>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">ACTIVO</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-5">
+            Guía de hordas con Dulce Aroma para las 5 regiones, con detector de estaciones en tiempo real para Teselia.
+          </p>
+          <div class="flex justify-between items-center pt-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
+            <span class="text-xs text-slate-500">Guía de entrenamiento</span>
+            <span class="text-amber-400 font-semibold text-sm flex items-center gap-1 transition-all duration-200 group-hover:gap-2">
+              Explorar →
+            </span>
+          </div>
+        </a>
+
+        <!-- Breeding -->
+        <a href="/breeding" id="card-breeding"
+           class="group block p-7 rounded-2xl no-underline text-inherit transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+           style="background: rgba(22, 30, 49, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);">
+          <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, #8b5cf6, #ec4899);"></div>
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-13 h-13 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                 style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3);">🧬</div>
+            <div>
+              <h3 class="font-outfit text-lg font-bold text-white mb-1">Simulador de Crianza</h3>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">ACTIVO</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-5">
+            Calcula IVs heredados, compatibilidad de grupos huevo, naturalezas con Braza Destino y movimientos huevo.
+          </p>
+          <div class="flex justify-between items-center pt-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
+            <span class="text-xs text-slate-500">Simulador completo</span>
+            <span class="text-purple-400 font-semibold text-sm flex items-center gap-1 transition-all duration-200 group-hover:gap-2">
+              Abrir →
+            </span>
+          </div>
+        </a>
+
+        <!-- Legendarios -->
+        <a href="/legendarios" id="card-legendarios"
+           class="group block p-7 rounded-2xl no-underline text-inherit transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
+           style="background: rgba(22, 30, 49, 0.75); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px);">
+          <div class="absolute top-0 left-0 right-0 h-0.5" style="background: linear-gradient(90deg, #f59e0b, #ec4899);"></div>
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-13 h-13 rounded-xl flex items-center justify-center text-amber-400 flex-shrink-0"
+                 style="background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.3);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-outfit text-lg font-bold text-white mb-1">Legendarios</h3>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.3);">ACTIVO</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-400 leading-relaxed mb-5">
+            Rotación mensual de aves y perros legendarios salvajes, y guía completa de cómo y dónde encontrar a todos los legendarios.
+          </p>
+          <div class="flex justify-between items-center pt-4" style="border-top: 1px solid rgba(255,255,255,0.06);">
+            <span class="text-xs text-slate-500">Rotación & Guía</span>
+            <span class="text-amber-400 font-semibold text-sm flex items-center gap-1 transition-all duration-200 group-hover:gap-2">
+              Explorar →
+            </span>
+          </div>
+        </a>
+
+        <!-- Próximamente: Bayas -->
+        <div id="card-berries"
+             class="p-7 rounded-2xl opacity-50 cursor-not-allowed"
+             style="background: rgba(22, 30, 49, 0.5); border: 1px solid rgba(255,255,255,0.05);">
+          <div class="flex items-start gap-4 mb-4">
+            <div class="w-13 h-13 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                 style="background: rgba(148,163,184,0.1); border: 1px solid rgba(148,163,184,0.2);">🌱</div>
+            <div>
+              <h3 class="font-outfit text-lg font-bold text-white mb-1">Plantación de Bayas</h3>
+              <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25);">PRÓXIMAMENTE</span>
+            </div>
+          </div>
+          <p class="text-sm text-slate-500 leading-relaxed">Calculadora de tiempos de cosecha y coste/beneficio de bayas en Teselia y Hoenn. En desarrollo.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════ CTA FINAL ════════════════════════════════════════ -->
+  <section class="py-20 px-6">
+    <div class="max-w-3xl mx-auto text-center p-12 rounded-3xl relative overflow-hidden"
+         style="background: linear-gradient(135deg, rgba(37,99,235,0.15), rgba(124,58,237,0.15)); border: 1px solid rgba(99,102,241,0.2);">
+      <div class="absolute inset-0 pointer-events-none opacity-30" aria-hidden="true"
+           style="background: radial-gradient(circle at 30% 50%, rgba(59,130,246,0.3), transparent 60%), radial-gradient(circle at 70% 50%, rgba(139,92,246,0.3), transparent 60%);"></div>
+      <div class="relative">
+        <h2 class="font-outfit text-3xl sm:text-4xl font-extrabold text-white mb-4">
+          ¿Listo para optimizar tu juego?
+        </h2>
+        <p class="text-slate-400 mb-8">
+          Empieza con el Gym Tracker para maximizar tus ganancias diarias o explora los spots de EVs para entrenar más rápido.
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center">
+          <a href="/gyms-farm"
+             class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white transition-all duration-300 hover:scale-105"
+             style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
+            ⚔️ Gym Farm Tracker
+          </a>
+          <a href="/evs-farm"
+             class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-slate-300 hover:text-white transition-all"
+             style="border: 1px solid rgba(255,255,255,0.15);">
+            ⚡ Farmeo de EVs
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</Layout>

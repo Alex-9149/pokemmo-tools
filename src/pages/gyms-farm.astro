@@ -1,0 +1,439 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="PokeMMO — Gym Farm Tracker"
+  description="Seguimiento de gimnasios en Kanto, Johto, Hoenn, Sinnoh y Teselia con cooldowns de 18h y calculadora de dinero con Amuleto Moneda."
+  activePage="gyms"
+>
+<style is:global>
+  :root {
+    --bg: #111827;
+    --panel: #1f2937;
+    --panel2: #243244;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+    --accent: #60a5fa;
+    --done: #166534;
+    --border: #374151;
+    --danger: #dc2626;
+    --gold: #f59e0b;
+    --ready: #22c55e;
+  }
+  .container { max-width: 1400px; width: 100%; margin: 0 auto; padding: 2.25rem 1.5rem 4rem; }
+  @media (min-width: 640px) { .container { padding-left: 2rem; padding-right: 2rem; } }
+  header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+  h1 { font-family: "Outfit", sans-serif !important; font-size: 2.1rem !important; font-weight: 800 !important; letter-spacing: -0.02em; margin: 0 0 0.4rem 0 !important; display: flex; align-items: center; gap: 12px; color: #f8fafc !important; }
+  .subtitle { color:var(--muted); margin-top:5px; }
+  button { border:0; border-radius:8px; padding:10px 16px; cursor:pointer; font-weight:700; font-family:inherit; transition:all 0.2s ease; }
+  #reset { background:var(--danger); color:white; }
+  #reset:hover { filter:brightness(1.1); }
+  .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin-bottom:20px; }
+  .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; }
+  .card .label { color:var(--muted); font-size:13px; }
+  .card .value { font-size:22px; font-weight:800; margin-top:4px; }
+  .card .value.gold { color:var(--gold); }
+  .tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .tab { background:var(--panel); color:var(--text); border:1px solid var(--border); }
+  .tab.active { background:var(--accent); color:#07111f; }
+  .region { display:none; background:var(--panel); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .region.active { display:block; }
+  .region-head { padding:16px 18px; display:flex; justify-content:space-between; gap:10px; align-items:center; background:var(--panel2); }
+  .region-head h2 { margin:0; }
+  .progress { color:var(--muted); }
+  table { width:100%; border-collapse:collapse; }
+  th, td { padding:13px 14px; border-top:1px solid var(--border); text-align:left; }
+  th { color:var(--muted); font-size:13px; }
+  tr.done { background:var(--done); }
+  td.check { width:90px; text-align:center; }
+  input[type="checkbox"] { width:21px; height:21px; cursor:pointer; accent-color:#22c55e; }
+  .city-es { font-weight:700; }
+  .city-en { color:var(--muted); font-size:12px; margin-top:2px; }
+  .leader { font-weight:600; }
+  .reward-box { display:flex; flex-direction:column; gap:2px; }
+  .reward-base { color:var(--muted); font-size:13px; }
+  .reward-amulet { color:var(--gold); font-weight:700; font-size:13px; }
+  .time-box { display:flex; flex-direction:column; gap:2px; font-size:12px; }
+  .time-done { color:var(--muted); }
+  .time-respawn { color:#38bdf8; font-weight:600; }
+  .time-countdown { color:#facc15; font-size:11px; font-weight:700; }
+  .time-ready-badge { color:#4ade80; font-weight:700; display:inline-flex; align-items:center; gap:4px; }
+  .type-badge { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; font-size:12px; font-weight:800; color:#fff; white-space:nowrap; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.12); }
+  .type-icon { font-size:14px; }
+  .type-normal{background:#6b7280;} .type-fire{background:#dc2626;} .type-water{background:#2563eb;}
+  .type-electric{background:#ca8a04;} .type-grass{background:#16a34a;} .type-ice{background:#0891b2;}
+  .type-fighting{background:#b91c1c;} .type-poison{background:#9333ea;} .type-ground{background:#a16207;}
+  .type-flying{background:#6366f1;} .type-psychic{background:#db2777;} .type-bug{background:#65a30d;}
+  .type-rock{background:#78716c;} .type-ghost{background:#6d28d9;} .type-dragon{background:#4f46e5;}
+  .type-dark{background:#374151;} .type-steel{background:#64748b;} .type-fairy{background:#db2777;}
+  .save-status { color:var(--muted); font-size:13px; margin-top:12px; }
+  .danger-note { color:#fca5a5; font-size:13px; margin-top:10px; }
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; z-index:999; opacity:0; pointer-events:none; transition:opacity 0.2s ease; }
+  .modal-overlay.visible { opacity:1; pointer-events:all; }
+  .modal-box { background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:32px 28px 24px; max-width:400px; width:90%; box-shadow:0 24px 60px rgba(0,0,0,0.6); display:flex; flex-direction:column; align-items:center; gap:12px; transform:translateY(-20px) scale(0.97); transition:transform 0.25s cubic-bezier(0.34,1.56,0.64,1), opacity 0.2s ease; opacity:0; }
+  .modal-overlay.visible .modal-box { transform:translateY(0) scale(1); opacity:1; }
+  .modal-title { font-size:18px; font-weight:800; color:var(--text); margin:0; text-align:center; }
+  .modal-body { color:var(--muted); font-size:14px; text-align:center; line-height:1.6; margin:0; }
+  .modal-body strong { color:var(--accent); font-weight:700; }
+  .modal-actions { display:flex; gap:10px; width:100%; margin-top:8px; }
+  .modal-btn { flex:1; padding:11px 16px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; border:0; transition:filter 0.15s ease, transform 0.1s ease; }
+  .modal-btn:hover { filter:brightness(1.12); }
+  .modal-btn:active { transform:scale(0.97); }
+  .modal-btn-cancel { background:var(--panel2); color:var(--muted); border:1px solid var(--border); }
+  .modal-btn-confirm { background:var(--danger); color:#fff; }
+  @media (max-width:750px) {
+    table { font-size:13px; }
+    th, td { padding:10px 8px; }
+    .city-en { font-size:11px; }
+    .type-badge { padding:4px 7px; font-size:11px; }
+  }
+  @media (max-width:600px) {
+    th:nth-child(1), td:nth-child(1) { display:none; }
+    th:nth-child(4), td:nth-child(4) { display:none; }
+    h1 { font-size:23px; }
+  }
+</style>
+
+<div class="container">
+
+  <header>
+    <div>
+      <h1>PokeMMO — Gym Farm Tracker</h1>
+      <div class="subtitle">
+        Marca los gimnasios que ya has farmeado. El estado y tiempos de cooldown (18h) se guardan automáticamente.
+      </div>
+    </div>
+    <div>
+      <button id="reset">↻ Reset — Borrar región</button>
+    </div>
+  </header>
+
+  <div class="summary">
+    <div class="card">
+      <div class="label">Gyms completados</div>
+      <div class="value" id="totalDone">0 / 41</div>
+    </div>
+    <div class="card">
+      <div class="label">Pendientes</div>
+      <div class="value" id="totalPending">41</div>
+    </div>
+    <div class="card">
+      <div class="label">Progreso total</div>
+      <div class="value" id="totalProgress">0%</div>
+    </div>
+    <div class="card">
+      <div class="label">Ganado (Sin Amuleto)</div>
+      <div class="value" id="earnedBase">$0</div>
+    </div>
+    <div class="card">
+      <div class="label">Ganado (Con Amuleto)</div>
+      <div class="value gold" id="earnedAmulet">$0</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div id="regions"></div>
+
+  <div class="save-status">
+    💾 Guardado automático: puedes cerrar el navegador y abrirlo de nuevo sin perder las marcas ni los tiempos.
+  </div>
+  <div class="danger-note">
+    ⚠️ Si borras el historial o almacenamiento local del navegador, se borrarán las marcas.
+  </div>
+
+</div>
+
+<!-- Custom Confirm Modal -->
+<div class="modal-overlay" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <p class="modal-title" id="modalTitle">Borrar región</p>
+    <p class="modal-body" id="modalBody">¿Estás seguro?</p>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" id="modalCancel">Cancelar</button>
+      <button class="modal-btn modal-btn-confirm" id="modalConfirm">Sí, borrar</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+const GYM_COOLDOWN_MS = 18 * 60 * 60 * 1000;
+
+const regions = {
+  "Kanto": [
+    ["1", "Ciudad Plateada", "Pewter City", "Brock", "Roca", 9000, true],
+    ["2", "Ciudad Celeste", "Cerulean City", "Misty", "Agua", 9000, true],
+    ["3", "Ciudad Carmín", "Vermilion City", "Lt. Surge", "Eléctrico", 9000, true],
+    ["4", "Ciudad Azulona", "Celadon City", "Erika", "Planta", 9000, true],
+    ["5", "Ciudad Fucsia", "Fuchsia City", "Koga", "Veneno", 9000, true],
+    ["6", "Ciudad Azafrán", "Saffron City", "Sabrina", "Psíquico", 9000, true],
+    ["7", "Isla Canela", "Cinnabar Island", "Blaine", "Fuego", 9000, true],
+    ["8", "Ciudad Verde", "Viridian City", "Giovanni", "Tierra", 0, false]
+  ],
+  "Johto": [
+    ["1", "Ciudad Malva", "Violet City", "Falkner", "Volador", 9000, true],
+    ["2", "Pueblo Azalea", "Azalea Town", "Bugsy", "Bicho", 9000, true],
+    ["3", "Ciudad Trigal", "Goldenrod City", "Whitney", "Normal", 9000, true],
+    ["4", "Ciudad Iris", "Ecruteak City", "Morty", "Fantasma", 9000, true],
+    ["5", "Ciudad Orquídea", "Cianwood City", "Chuck", "Lucha", 9000, true],
+    ["6", "Ciudad Olivo", "Olivine City", "Jasmine", "Acero", 9000, true],
+    ["7", "Pueblo Caoba", "Mahogany Town", "Pryce", "Hielo", 9000, true],
+    ["8", "Ciudad Endrino", "Blackthorn City", "Clair", "Dragón", 9000, true]
+  ],
+  "Hoenn": [
+    ["1", "Ciudad Férrica", "Rustboro City", "Roxanne", "Roca", 9000, true],
+    ["2", "Pueblo Azuliza", "Dewford Town", "Brawly", "Lucha", 9000, true],
+    ["3", "Ciudad Malvalona", "Mauville City", "Wattson", "Eléctrico", 9000, true],
+    ["4", "Pueblo Lavacalda", "Lavaridge Town", "Flannery", "Fuego", 9000, true],
+    ["5", "Ciudad Petalia", "Petalburg City", "Norman", "Normal", 9000, true],
+    ["6", "Ciudad Arborada", "Fortree City", "Winona", "Volador", 9000, true],
+    ["7", "Ciudad Algaria", "Mossdeep City", "Tate & Liza", "Psíquico", 9000, true],
+    ["8", "Arrecípolis", "Sootopolis City", "Juan", "Agua", 9000, true]
+  ],
+  "Sinnoh": [
+    ["1", "Ciudad Pirita", "Oreburgh City", "Roark", "Roca", 9000, true],
+    ["2", "Ciudad Vetusta", "Eterna City", "Gardenia", "Planta", 9000, true],
+    ["3", "Ciudad Corazón", "Hearthome City", "Fantina", "Fantasma", 9000, true],
+    ["4", "Ciudad Rocavelo", "Veilstone City", "Maylene", "Lucha", 9000, true],
+    ["5", "Ciudad Pradera", "Pastoria City", "Crasher Wake", "Agua", 9000, true],
+    ["6", "Ciudad Canal", "Canalave City", "Byron", "Acero", 9000, true],
+    ["7", "Ciudad Puntaneva", "Snowpoint City", "Candice", "Hielo", 9000, true],
+    ["8", "Ciudad Marina", "Sunyshore City", "Volkner", "Eléctrico", 9000, true]
+  ],
+  "Unova": [
+    ["1", "Ciudad Gres (3 Líderes)", "Striaton City", "Chili, Cilan y Cress", "Fuego / Planta / Agua", 27000, true],
+    ["2", "Ciudad Esmalte", "Nacrene City", "Lenora", "Normal", 9000, true],
+    ["3", "Ciudad Porcelana", "Castelia City", "Burgh", "Bicho", 9000, true],
+    ["4", "Ciudad Mayólica", "Nimbasa City", "Elesa", "Eléctrico", 9000, true],
+    ["5", "Ciudad Fayenza", "Driftveil City", "Clay", "Tierra", 9000, true],
+    ["6", "Ciudad Loza", "Mistralton City", "Skyla", "Volador", 9000, true],
+    ["7", "Ciudad Teja", "Icirrus City", "Brycen", "Hielo", 9000, true],
+    ["8", "Ciudad Caolín", "Opelucid City", "Drayden / Iris", "Dragón", 9000, true]
+  ]
+};
+
+const typeIcons = {
+  "Normal": "⚪", "Fuego": "🔥", "Agua": "💧", "Eléctrico": "⚡",
+  "Planta": "🌿", "Hielo": "❄️", "Lucha": "🥊", "Veneno": "☠️",
+  "Tierra": "🌍", "Volador": "🪽", "Psíquico": "🔮", "Bicho": "🐛",
+  "Roca": "🪨", "Fantasma": "👻", "Dragón": "🐉", "Siniestro": "🌑",
+  "Acero": "⚙️", "Hada": "✨"
+};
+
+const typeClasses = {
+  "Normal": "type-normal", "Fuego": "type-fire", "Agua": "type-water",
+  "Eléctrico": "type-electric", "Planta": "type-grass", "Hielo": "type-ice",
+  "Lucha": "type-fighting", "Veneno": "type-poison", "Tierra": "type-ground",
+  "Volador": "type-flying", "Psíquico": "type-psychic", "Bicho": "type-bug",
+  "Roca": "type-rock", "Fantasma": "type-ghost", "Dragón": "type-dragon",
+  "Siniestro": "type-dark", "Acero": "type-steel", "Hada": "type-fairy"
+};
+
+const STORAGE_KEY = "pokemmo-gym-farm-v2";
+let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+function formatMoney(amount) { return "$" + amount.toLocaleString("es-ES"); }
+function formatDate(timestamp) {
+  if (!timestamp) return "-";
+  const date = new Date(timestamp);
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${hours}:${minutes} (${day}/${month})`;
+}
+
+function renderTimeCell(key, isAvailable) {
+  if (!isAvailable) return "<span>-</span>";
+  let timeVal = state[key];
+  if (!timeVal) return `<span class="time-done">-</span>`;
+  if (timeVal === true) { timeVal = Date.now(); state[key] = timeVal; saveState(); }
+  const completedTime = Number(timeVal);
+  const respawnTime = completedTime + GYM_COOLDOWN_MS;
+  const now = Date.now();
+  const diff = respawnTime - now;
+  if (diff <= 0) {
+    return `<div class="time-box"><span class="time-ready-badge">🟢 ¡Disponible!</span><span class="time-done">Hecho: ${formatDate(completedTime)}</span></div>`;
+  }
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `<div class="time-box"><span class="time-done">Marcado: ${formatDate(completedTime)}</span><span class="time-respawn">Disponible: ${formatDate(respawnTime)}</span><span class="time-countdown">⏳ Reaparece en: ${hours}h ${minutes}m</span></div>`;
+}
+
+function updateAllTimers() {
+  Object.keys(regions).forEach(region => {
+    regions[region].forEach((gym, i) => {
+      const key = `${region}-${i}`;
+      const cell = document.getElementById(`time-cell-${key}`);
+      if (cell) cell.innerHTML = renderTimeCell(key, gym[6] !== false);
+    });
+  });
+}
+
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function save() { saveState(); updateSummary(); updateRegionProgress(); updateAllTimers(); }
+
+function updateSummary() {
+  let totalGyms = 0, doneGyms = 0, earnedBase = 0, earnedAmulet = 0;
+  Object.keys(regions).forEach(region => {
+    regions[region].forEach((gym, i) => {
+      const isAvailable = gym[6] !== false;
+      if (!isAvailable) return;
+      totalGyms++;
+      const baseMoney = gym[5];
+      const amuletMoney = Math.round(baseMoney * 1.5);
+      if (state[`${region}-${i}`]) { doneGyms++; earnedBase += baseMoney; earnedAmulet += amuletMoney; }
+    });
+  });
+  document.getElementById("totalDone").textContent = `${doneGyms} / ${totalGyms}`;
+  document.getElementById("totalPending").textContent = String(totalGyms - doneGyms);
+  document.getElementById("totalProgress").textContent = totalGyms > 0 ? `${Math.round((doneGyms / totalGyms) * 100)}%` : "0%";
+  document.getElementById("earnedBase").textContent = formatMoney(earnedBase);
+  document.getElementById("earnedAmulet").textContent = formatMoney(earnedAmulet);
+}
+
+function updateRegionProgress() {
+  for (const region of Object.keys(regions)) {
+    const totalInRegion = regions[region].filter(g => g[6] !== false).length;
+    const done = regions[region].filter((g, i) => g[6] !== false && state[`${region}-${i}`]).length;
+    const el = document.querySelector(`[data-progress="${region}"]`);
+    if (el) el.textContent = `${done} / ${totalInRegion} completados`;
+  }
+}
+
+function createTypeBadge(type) {
+  const types = type.split(" / ");
+  return types.map(t => {
+    const cssClass = typeClasses[t] || "type-normal";
+    const icon = typeIcons[t] || "❔";
+    return `<span class="type-badge ${cssClass}"><span class="type-icon">${icon}</span>${t}</span>`;
+  }).join(" ");
+}
+
+function render() {
+  const tabs = document.getElementById("tabs");
+  const regionsEl = document.getElementById("regions");
+  tabs.innerHTML = "";
+  regionsEl.innerHTML = "";
+  Object.keys(regions).forEach((region, index) => {
+    const tab = document.createElement("button");
+    tab.className = "tab" + (index === 0 ? " active" : "");
+    tab.textContent = region;
+    tab.dataset.region = region;
+    tab.onclick = () => {
+      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+      document.querySelectorAll(".region").forEach(x => x.classList.remove("active"));
+      tab.classList.add("active");
+      document.getElementById(`region-${region}`).classList.add("active");
+      updateResetLabel();
+    };
+    tabs.appendChild(tab);
+
+    const section = document.createElement("section");
+    section.className = "region" + (index === 0 ? " active" : "");
+    section.id = `region-${region}`;
+    section.innerHTML = `
+      <div class="region-head">
+        <h2>${region}</h2>
+        <div class="progress" data-progress="${region}"></div>
+      </div>
+      <table>
+        <thead><tr>
+          <th>#</th><th>Ciudad / City</th><th>Líder / Leader</th>
+          <th>Tipo / Type</th><th>Recompensa</th><th>Horario / Cooldown (18h)</th>
+          <th class="check">Hecho</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>`;
+
+    const tbody = section.querySelector("tbody");
+    regions[region].forEach((gym, i) => {
+      const key = `${region}-${i}`;
+      const tr = document.createElement("tr");
+      const [number, cityES, cityEN, leader, type, baseReward] = gym;
+      const amuletReward = Math.round(baseReward * 1.5);
+      const isAvailable = gym[6] !== false;
+      if (isAvailable && state[key]) tr.classList.add("done");
+      tr.innerHTML = `
+        <td>${number}</td>
+        <td><div class="city-es">${cityES}</div><div class="city-en">${cityEN}</div></td>
+        <td><span class="leader">${leader}</span></td>
+        <td>${createTypeBadge(type)}</td>
+        <td><div class="reward-box">${isAvailable
+          ? `<span class="reward-base">Sin: ${formatMoney(baseReward)}</span><span class="reward-amulet">Con: ${formatMoney(amuletReward)}</span>`
+          : `<span class="reward-base">No disponible</span>`}</div></td>
+        <td id="time-cell-${key}">${renderTimeCell(key, isAvailable)}</td>
+        <td class="check">${isAvailable
+          ? `<input type="checkbox" ${state[key] ? "checked" : ""} aria-label="Marcar ${leader}">`
+          : `-`}</td>`;
+      const checkbox = tr.querySelector("input");
+      if (checkbox) {
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) { state[key] = Date.now(); tr.classList.add("done"); }
+          else { delete state[key]; tr.classList.remove("done"); }
+          save();
+        });
+      }
+      tbody.appendChild(tr);
+    });
+    regionsEl.appendChild(section);
+  });
+  updateSummary();
+  updateRegionProgress();
+  updateAllTimers();
+}
+
+function getActiveRegion() {
+  const activeTab = document.querySelector(".tab.active");
+  return activeTab ? activeTab.dataset.region : null;
+}
+
+function updateResetLabel() {
+  const region = getActiveRegion();
+  const btn = document.getElementById("reset");
+  btn.textContent = region ? `↻ Reset — Borrar ${region}` : "↻ Reset — Borrar región";
+}
+
+const confirmModal = document.getElementById("confirmModal");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+const modalConfirmBtn = document.getElementById("modalConfirm");
+const modalCancelBtn = document.getElementById("modalCancel");
+let _modalResolve = null;
+
+function showConfirmModal(region) {
+  modalTitle.textContent = `Borrar ${region}`;
+  modalBody.innerHTML = `¿Seguro que deseas reiniciar todos los gimnasios de <strong>${region}</strong>? Esta acción no se puede deshacer.`;
+  confirmModal.classList.add("visible");
+  return new Promise(resolve => { _modalResolve = resolve; });
+}
+
+function closeModal(result) {
+  confirmModal.classList.remove("visible");
+  if (_modalResolve) { _modalResolve(result); _modalResolve = null; }
+}
+
+modalConfirmBtn.addEventListener("click", () => closeModal(true));
+modalCancelBtn.addEventListener("click", () => closeModal(false));
+confirmModal.addEventListener("click", e => { if (e.target === confirmModal) closeModal(false); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && confirmModal.classList.contains("visible")) closeModal(false); });
+
+document.getElementById("reset").addEventListener("click", async () => {
+  const region = getActiveRegion();
+  if (!region) return;
+  const confirmed = await showConfirmModal(region);
+  if (confirmed) {
+    regions[region].forEach((_, i) => { delete state[`${region}-${i}`]; });
+    saveState();
+    render();
+    const tab = document.querySelector(`.tab[data-region="${region}"]`);
+    if (tab) tab.click();
+  }
+});
+
+render();
+updateResetLabel();
+setInterval(updateAllTimers, 30000);
+</script>
+
+</Layout>
