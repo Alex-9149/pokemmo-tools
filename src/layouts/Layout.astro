@@ -29,24 +29,24 @@ const {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.1.18/dist/lenis.css" />
 </head>
 <body>
   <Navbar activePage={activePage} />
   <slot />
   <Footer />
 
-  <script>
-    import Lenis from 'lenis';
-
+  <script is:inline src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script is:inline>
     const lenis = new Lenis({
-      duration: 1.8,
-      wheelMultiplier: 1.0,
+      duration: 2.0,
+      wheelMultiplier: 1.2,
       smoothWheel: true,
-      syncTouch: true,
-      prevent: false,
     });
 
-    function raf(time: number) {
+    window.lenis = lenis;
+
+    function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
     }
