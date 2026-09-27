@@ -34,6 +34,25 @@ const {
   <Navbar activePage={activePage} />
   <slot />
   <Footer />
+
+  <script>
+    import Lenis from 'lenis';
+
+    const lenis = new Lenis({
+      duration: 1.8,
+      wheelMultiplier: 1.0,
+      smoothWheel: true,
+      syncTouch: true,
+      prevent: false,
+    });
+
+    function raf(time: number) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+  </script>
 </body>
 </html>
 
