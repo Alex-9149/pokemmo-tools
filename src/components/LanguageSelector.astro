@@ -1,0 +1,241 @@
+---
+// LanguageSelector.astro — Dynamic 3-column Flag Language Switcher with Google Translate integration
+---
+
+<div class="relative inline-block text-left" id="lang-selector-container">
+  <!-- FLAG BUTTON -->
+  <button id="lang-menu-btn"
+          type="button"
+          aria-expanded="false"
+          aria-haspopup="true"
+          title="Cambiar idioma / Change language"
+          class="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border text-xs font-bold text-slate-200 transition-all duration-200 hover:bg-white/10 hover:border-white/20 cursor-pointer shadow-sm select-none"
+          style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.12);">
+    <img id="current-lang-flag" src="https://flagcdn.com/w40/es.png" alt="ES" class="w-5 h-3.5 object-cover rounded-xs shadow-xs" />
+    <span id="current-lang-code" class="font-semibold uppercase tracking-wider text-slate-300">ES</span>
+    <svg class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" id="lang-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
+
+  <!-- DROPDOWN PANEL (3 COLUMNS GRID) -->
+  <div id="lang-dropdown-panel"
+       class="hidden absolute right-0 mt-2 w-72 rounded-2xl border shadow-2xl z-50 p-2.5 backdrop-blur-xl transition-all duration-200"
+       style="background: rgba(15, 23, 42, 0.96); border-color: rgba(255, 255, 255, 0.12);">
+    
+    <div class="px-2 py-1 mb-2 border-b flex justify-between items-center" style="border-color: rgba(255, 255, 255, 0.08);">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Idioma / Language</span>
+      <span class="text-[10px] text-blue-400 font-mono">9 Idiomas</span>
+    </div>
+
+    <!-- 3 COLUMNS GRID FOR FLAGS -->
+    <div class="grid grid-cols-3 gap-1.5">
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="es" data-flag="https://flagcdn.com/w40/es.png" data-code="ES">
+        <img src="https://flagcdn.com/w40/es.png" alt="Español" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">Español</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="en" data-flag="https://flagcdn.com/w40/gb.png" data-code="EN">
+        <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">English</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="fr" data-flag="https://flagcdn.com/w40/fr.png" data-code="FR">
+        <img src="https://flagcdn.com/w40/fr.png" alt="Français" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">Français</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="de" data-flag="https://flagcdn.com/w40/de.png" data-code="DE">
+        <img src="https://flagcdn.com/w40/de.png" alt="Deutsch" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">Deutsch</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="it" data-flag="https://flagcdn.com/w40/it.png" data-code="IT">
+        <img src="https://flagcdn.com/w40/it.png" alt="Italiano" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">Italiano</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="pt" data-flag="https://flagcdn.com/w40/pt.png" data-code="PT">
+        <img src="https://flagcdn.com/w40/pt.png" alt="Português" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">Português</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="zh-CN" data-flag="https://flagcdn.com/w40/cn.png" data-code="ZH">
+        <img src="https://flagcdn.com/w40/cn.png" alt="中文" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">中文</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="ja" data-flag="https://flagcdn.com/w40/jp.png" data-code="JA">
+        <img src="https://flagcdn.com/w40/jp.png" alt="日本語" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">日本語</span>
+      </button>
+
+      <button class="lang-opt-btn flex flex-col items-center justify-center p-2 rounded-xl border border-transparent hover:border-blue-500/40 hover:bg-white/8 transition-all cursor-pointer group" data-lang="ko" data-flag="https://flagcdn.com/w40/kr.png" data-code="KO">
+        <img src="https://flagcdn.com/w40/kr.png" alt="한국어" class="w-7 h-5 object-cover rounded-xs mb-1 shadow-sm transition-transform group-hover:scale-110" />
+        <span class="text-[11px] font-semibold text-slate-300 group-hover:text-white">한국어</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden Google Translate Element -->
+<div id="google_translate_element" class="hidden"></div>
+
+<style is:global>
+  /* Hide ONLY the Google Translate top banner frame & force top 0 */
+  iframe.goog-te-banner-frame,
+  .goog-te-banner-frame,
+  #goog-gt-tt,
+  .goog-te-balloon-frame,
+  .goog-te-spinner-pos {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+  body {
+    top: 0px !important;
+    position: static !important;
+  }
+
+  .goog-text-highlight {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+</style>
+
+<script is:inline>
+  (function initLanguageSelector() {
+    // Keep body at top 0 even if Google Translate adds top margin
+    const keepBodyTop = () => {
+      if (document.body.style.top !== '0px') {
+        document.body.style.top = '0px';
+      }
+    };
+    setInterval(keepBodyTop, 300);
+
+    const flagsMap = {
+      'es': { flag: 'https://flagcdn.com/w40/es.png', code: 'ES' },
+      'en': { flag: 'https://flagcdn.com/w40/gb.png', code: 'EN' },
+      'fr': { flag: 'https://flagcdn.com/w40/fr.png', code: 'FR' },
+      'de': { flag: 'https://flagcdn.com/w40/de.png', code: 'DE' },
+      'it': { flag: 'https://flagcdn.com/w40/it.png', code: 'IT' },
+      'pt': { flag: 'https://flagcdn.com/w40/pt.png', code: 'PT' },
+      'zh-CN': { flag: 'https://flagcdn.com/w40/cn.png', code: 'ZH' },
+      'ja': { flag: 'https://flagcdn.com/w40/jp.png', code: 'JA' },
+      'ko': { flag: 'https://flagcdn.com/w40/kr.png', code: 'KO' }
+    };
+
+    // Load Google Translate script dynamically
+    window.googleTranslateElementInit = function() {
+      if (window.google && window.google.translate) {
+        new window.google.translate.TranslateElement({
+          pageLanguage: 'es',
+          includedLanguages: 'es,en,fr,de,it,pt,zh-CN,ja,ko',
+          autoDisplay: false
+        }, 'google_translate_element');
+      }
+    };
+
+    if (!document.getElementById('google-translate-script')) {
+      const gtScript = document.createElement('script');
+      gtScript.id = 'google-translate-script';
+      gtScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+      document.head.appendChild(gtScript);
+    }
+
+    function setLanguage(langCode, flagSrc, code) {
+      localStorage.setItem('selected_lang', langCode);
+
+      // Update button UI
+      const currentFlagEl = document.getElementById('current-lang-flag');
+      const currentCodeEl = document.getElementById('current-lang-code');
+      if (currentFlagEl) currentFlagEl.src = flagSrc;
+      if (currentCodeEl) currentCodeEl.textContent = code;
+
+      // Update active state in 3-column grid
+      document.querySelectorAll('.lang-opt-btn').forEach(btn => {
+        if (btn.getAttribute('data-lang') === langCode) {
+          btn.classList.add('bg-blue-600/25', 'border-blue-500/50');
+          btn.classList.remove('border-transparent');
+        } else {
+          btn.classList.remove('bg-blue-600/25', 'border-blue-500/50');
+          btn.classList.add('border-transparent');
+        }
+      });
+
+      // Set googtrans cookie for seamless translation
+      if (langCode === 'es') {
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=' + location.hostname;
+      } else {
+        document.cookie = 'googtrans=/es/' + langCode + '; path=/;';
+        document.cookie = 'googtrans=/es/' + langCode + '; path=/; domain=' + location.hostname;
+      }
+
+      // Trigger Google Translate select
+      const selectEl = document.querySelector('#google_translate_element select');
+      if (selectEl) {
+        selectEl.value = langCode;
+        selectEl.dispatchEvent(new Event('change'));
+      }
+
+      // Reload if switching language to apply full DOM translation seamlessly
+      location.reload();
+    }
+
+    document.addEventListener('click', (e) => {
+      const menuBtn = e.target.closest('#lang-menu-btn');
+      const panel = document.getElementById('lang-dropdown-panel');
+      const chevron = document.getElementById('lang-chevron');
+
+      if (menuBtn && panel) {
+        const isHidden = panel.classList.contains('hidden');
+        if (isHidden) {
+          panel.classList.remove('hidden');
+          if (chevron) chevron.classList.add('rotate-180');
+        } else {
+          panel.classList.add('hidden');
+          if (chevron) chevron.classList.remove('rotate-180');
+        }
+        return;
+      }
+
+      const optBtn = e.target.closest('.lang-opt-btn');
+      if (optBtn) {
+        const lang = optBtn.getAttribute('data-lang');
+        const flag = optBtn.getAttribute('data-flag');
+        const code = optBtn.getAttribute('data-code');
+        if (lang) setLanguage(lang, flag, code);
+        if (panel) panel.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+        return;
+      }
+
+      // Close dropdown when clicking outside
+      const container = document.getElementById('lang-selector-container');
+      if (container && !container.contains(e.target) && panel) {
+        panel.classList.add('hidden');
+        if (chevron) chevron.classList.remove('rotate-180');
+      }
+    });
+
+    // Restore saved language button state on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('selected_lang');
+      if (savedLang && flagsMap[savedLang]) {
+        const currentFlagEl = document.getElementById('current-lang-flag');
+        const currentCodeEl = document.getElementById('current-lang-code');
+        if (currentFlagEl) currentFlagEl.src = flagsMap[savedLang].flag;
+        if (currentCodeEl) currentCodeEl.textContent = flagsMap[savedLang].code;
+
+        document.querySelectorAll('.lang-opt-btn').forEach(btn => {
+          if (btn.getAttribute('data-lang') === savedLang) {
+            btn.classList.add('bg-blue-600/25', 'border-blue-500/50');
+            btn.classList.remove('border-transparent');
+          }
+        });
+      }
+    });
+  })();
+</script>

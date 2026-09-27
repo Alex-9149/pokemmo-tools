@@ -16,7 +16,7 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
 
 - [x] **Deployear en GitHub Pages:** Subir la web a una rama de producción (ej. `gh-pages`) para que sea accesible públicamente.
 
-- [ ] **Sidebar de navegación:** Cambiar el navbar horizontal actual por un sidebar vertical en la izquierda con desplegable en columna para una navegación más cómoda, especialmente en móvil.
+- [x] **Sidebar de navegación:** Cambiar el navbar horizontal actual por un sidebar vertical en la izquierda con desplegable en columna para una navegación más cómoda, especialmente en móvil.(Elegir entre vertical/horizontal)
 
 - [ ] **Botón "Mejoras de la Comunidad":** Añadir en la cabecera, arriba a la derecha, un botón o sección de sugerencias / roadmap visible desde cualquier página.
 
@@ -34,9 +34,10 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
 
 ## 🟡 MEDIA — Añade mucho valor, requiere más esfuerzo
 
-- [ ] **Selector de idioma (ES / EN):**
-  - Opción A: botón manual ES/EN con textos traducidos en el propio código.
-  - Opción B: integrar Google Translate API para traducción automática.
+- [x] **Selector de idioma (ES / EN / Banderas):**
+  - Botón de bandera en la cabecera superior derecha.
+  - Desplegable interactivo con **3 columnas de banderas** (Español 🇪🇸, Inglés 🇬🇧, Francés 🇫🇷, Alemán 🇩🇪, Italiano 🇮🇹, Portugués 🇵🇹, Chino 🇨🇳, Japonés 🇯🇵, Coreano 🇰🇷).
+  - Integración dinámica para traducción automática de la web y persistencia en `localStorage`.
 
 - [ ] **Chat / Login para Raids:**
   - Login ligero con solo el nick de PokeMMO del usuario.
