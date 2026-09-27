@@ -6,19 +6,21 @@ interface Props {
 }
 const { activePage = '' } = Astro.props;
 
+const baseUrl = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 const links = [
-  { href: '/', label: 'Inicio',       key: 'index'    },
-  { href: '/gyms-farm',  label: 'Gimnasios',   key: 'gyms'     },
-  { href: '/evs-farm',   label: 'Farmeo de EVs', key: 'evs'    },
-  { href: '/breeding',   label: 'Crianza',     key: 'breeding' },
-  { href: '/legendarios', label: 'Legendarios', key: 'legendarios' },
+  { href: `${baseUrl}/`,            label: 'Inicio',       key: 'index'    },
+  { href: `${baseUrl}/gyms-farm`,   label: 'Gimnasios',   key: 'gyms'     },
+  { href: `${baseUrl}/evs-farm`,    label: 'Farmeo de EVs', key: 'evs'    },
+  { href: `${baseUrl}/breeding`,    label: 'Crianza',     key: 'breeding' },
+  { href: `${baseUrl}/legendarios`, label: 'Legendarios', key: 'legendarios' },
 ];
 ---
 
 <nav class="sticky top-0 z-50 backdrop-blur-xl border-b px-6 sm:px-12 py-3 flex items-center justify-between"
      style="background: rgba(11, 15, 25, 0.88); border-color: rgba(255,255,255,0.08);">
 
-  <a href="/" class="flex items-center gap-3 no-underline text-inherit group">
+  <a href={`${baseUrl}/`} class="flex items-center gap-3 no-underline text-inherit group">
     <div class="brand-icon transition-transform duration-300 group-hover:scale-110"></div>
     <span class="font-outfit text-xl font-extrabold tracking-tight"
           style="background: linear-gradient(to right, #ffffff, #93c5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
