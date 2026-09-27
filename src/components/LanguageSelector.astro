@@ -106,13 +106,24 @@
 
 <script is:inline>
   (function initLanguageSelector() {
-    // Keep body at top 0 even if Google Translate adds top margin
-    const keepBodyTop = () => {
-      if (document.body.style.top !== '0px') {
-        document.body.style.top = '0px';
-      }
+    // Keep body at top 0 and purge any Google Translate top banner elements
+    const purgeTranslateBanner = () => {
+      if (document.body) document.body.style.setProperty('top', '0px', 'important');
+      if (document.documentElement) document.documentElement.style.setProperty('top', '0px', 'important');
+
+      const elements = document.querySelectorAll('.skiptranslate, iframe.skiptranslate, iframe[src*="translate"], .goog-te-banner-frame, .VIpgJd-yA0fc-Lg4eec');
+      elements.forEach(el => {
+        if (el.id !== 'google_translate_element' && !el.closest('#google_translate_element')) {
+          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('opacity', '0', 'important');
+          el.style.setProperty('visibility', 'hidden', 'important');
+          el.style.setProperty('height', '0px', 'important');
+          el.style.setProperty('pointer-events', 'none', 'important');
+        }
+      });
     };
-    setInterval(keepBodyTop, 300);
+
+    setInterval(purgeTranslateBanner, 150);
 
     const flagsMap = {
       'es': { flag: 'https://flagcdn.com/w40/es.png', code: 'ES' },

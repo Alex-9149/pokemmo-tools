@@ -50,6 +50,33 @@ html.lenis, html.lenis body {
   pointer-events: none;
 }
 
+/* ─── Hide Google Translate Top Banner & Toolbars ──────────────── */
+.skiptranslate:not(#google_translate_element),
+.goog-te-banner-frame,
+iframe.goog-te-banner-frame,
+iframe.skiptranslate,
+iframe[src*="translate"],
+.VIpgJd-yA0fc-Lg4eec,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-te-spinner-pos {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  max-height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+}
+
+html, body {
+  top: 0px !important;
+  position: static !important;
+}
+
 body {
   background-color: var(--color-bg-deep);
   color: var(--color-text);
