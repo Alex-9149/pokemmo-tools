@@ -14,7 +14,7 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
 
 ## 🟠 ALTA — Alto impacto en usuarios o visibilidad
 
-- [ ] **Deployear en GitHub Pages:** Subir la web a una rama de producción (ej. `gh-pages`) para que sea accesible públicamente.
+- [x] **Deployear en GitHub Pages:** Subir la web a una rama de producción (ej. `gh-pages`) para que sea accesible públicamente.
 
 - [ ] **Sidebar de navegación:** Cambiar el navbar horizontal actual por un sidebar vertical en la izquierda con desplegable en columna para una navegación más cómoda, especialmente en móvil.
 
