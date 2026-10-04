@@ -46,6 +46,18 @@ const {
 
     window.lenis = lenis;
 
+    // Recalcular el límite de scroll cuando cambia la altura del contenido (desplegables, etc.)
+    const refreshLenis = () => lenis.resize();
+    new ResizeObserver(refreshLenis).observe(document.body);
+    document.addEventListener('toggle', refreshLenis, true);
+    document.addEventListener('click', () => {
+      setTimeout(refreshLenis, 50);
+      setTimeout(refreshLenis, 400);
+    }, true);
+    new MutationObserver(refreshLenis).observe(document.body, {
+      subtree: true, childList: true, attributes: true,
+    });
+
     function raf(time) {
       lenis.raf(time);
       requestAnimationFrame(raf);
