@@ -2,7 +2,7 @@
 
 Ordenadas por prioridad (de mayor a menor impacto en la web).
 
----
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## 🔴 CRÍTICA — Funcionalidad rota / incompleta
 
@@ -10,7 +10,7 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
   - Corregir movimientos huevo (egg moves) que no se muestran correctamente.
   - Añadir porcentajes reales de probabilidad de IVs heredados según mecánicas de PokeMMO.
 
----
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## 🟠 ALTA — Alto impacto en usuarios o visibilidad
 
@@ -30,7 +30,7 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
   - Mostrar los perros legendarios y pájaros legendarios activos en el ciclo actual.
   - Indicar fechas del ciclo, ubicaciones y cómo capturarlos.
 
----
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## 🟡 MEDIA — Añade mucho valor, requiere más esfuerzo
 
@@ -56,7 +56,7 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
   - Por cada región, qué HMs se necesitan y cuándo durante la historia.
   - Indicar los mejores Pokémon "HM slave" para llevar en el equipo.
 
----
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## 🟢 BAJA — Polish, nice-to-have y optimizaciones
 
