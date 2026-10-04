@@ -70,8 +70,10 @@ Ordenadas por prioridad (de mayor a menor impacto en la web).
   - Mejorar meta-descripciones de cada página.
   - Añadir Open Graph tags para que los enlaces compartan una vista previa bonita en Discord y redes sociales.
 
-- [ ] **Modo claro / oscuro (toggle):**
-  - La web actualmente es solo dark. Un toggle opcional mejora la accesibilidad.
+- [x] **Personalizador de paleta de colores (tema por usuario):**
+  - Botón de acuarela en la barra de navegación que abre un modal de personalización.
+  - Permite seleccionar colores individualmente (fondo, paneles, botones, primario, secundario, texto, etc.).
+  - Paleta de 60 colores, color picker nativo e input hexadecimal con guardado en `localStorage`.
 
 - [ ] **PWA (Progressive Web App):**
   - Permitir instalar la web como app en móvil.

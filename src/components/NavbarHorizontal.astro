@@ -1,6 +1,7 @@
 ---
 // NavbarHorizontal.astro — original horizontal top navigation bar
 import LanguageSelector from './LanguageSelector.astro';
+import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   activePage?: string;
@@ -19,7 +20,7 @@ const links = [
 ---
 
 <nav class="sticky top-0 z-50 backdrop-blur-xl border-b px-4 sm:px-8 py-3 flex items-center justify-between"
-     style="background: rgba(11, 15, 25, 0.88); border-color: rgba(255,255,255,0.08);">
+     style="background: color-mix(in srgb, var(--color-bg-deep, #0b0f19) 88%, transparent); border-color: rgba(255,255,255,0.08);">
 
   <a href={`${baseUrl}/`} class="flex items-center gap-3 no-underline text-inherit group">
     <div class="brand-icon transition-transform duration-300 group-hover:scale-110"></div>
@@ -44,6 +45,9 @@ const links = [
         </li>
       ))}
     </ul>
+
+    <!-- SELECTOR DE COLORES PERSONALIZADOS -->
+    <ThemeToggle />
 
     <!-- LANGUAGE SELECTOR AT TOP RIGHT -->
     <LanguageSelector />

@@ -21,6 +21,54 @@ const {
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <script is:inline>
+    // Personalización de colores: cada usuario elige los suyos (localStorage). Sin selección => web original.
+    window.THEME_KEYS = [
+      { id: 'bg',        label: 'Fondo de la web',          desc: 'El color de fondo general',              def: '#0b0f19' },
+      { id: 'panel',     label: 'Tarjetas y paneles',        desc: 'Cajas, tarjetas y contenedores',         def: '#1f2937' },
+      { id: 'panel2',    label: 'Cabeceras y paneles 2º',    desc: 'Cabeceras de tarjetas y zonas elevadas', def: '#243244' },
+      { id: 'primary',   label: 'Color primario',            desc: 'Acentos, enlaces y elementos activos',   def: '#3b82f6' },
+      { id: 'secondary', label: 'Color secundario',          desc: 'Brillos y detalles complementarios',     def: '#8b5cf6' },
+      { id: 'button',    label: 'Botones',                   desc: 'Botones y pestañas activas',             def: '#3b82f6' },
+      { id: 'gold',      label: 'Destacado / dorado',        desc: 'Insignias, avisos y estrellas',          def: '#f59e0b' },
+      { id: 'text',      label: 'Texto principal',           desc: 'Títulos y texto importante',             def: '#f8fafc' },
+      { id: 'muted',     label: 'Texto secundario',          desc: 'Descripciones y textos apagados',        def: '#94a3b8' },
+      { id: 'border',    label: 'Bordes',                    desc: 'Líneas y separadores',                   def: '#ffffff' },
+    ];
+    window.applyThemeColors = function (custom) {
+      const s = document.documentElement.style;
+      const set = (names, v) => names.forEach((n) => (v == null ? s.removeProperty(n) : s.setProperty(n, v)));
+      const mix = (c, w, pct) => 'color-mix(in srgb, ' + c + ', ' + w + ' ' + pct + '%)';
+      const g = (k) => (custom && custom[k]) || null;
+      set(['--bg', '--color-bg-deep'], g('bg'));
+      set(['--panel', '--color-panel-dark', '--color-panel'], g('panel'));
+      set(['--panel2', '--panel-head', '--color-panel-2'], g('panel2'));
+      const p = g('primary');
+      set(['--accent', '--color-accent-blue', '--color-blue-500'], p);
+      set(['--color-blue-600'], p && mix(p, '#000', 15));
+      set(['--color-blue-400'], p && mix(p, '#fff', 18));
+      set(['--color-blue-300'], p && mix(p, '#fff', 40));
+      set(['--glow-1'], p && mix(p, 'transparent', 85));
+      const sc = g('secondary');
+      set(['--color-accent-purple', '--color-purple-500', '--color-violet-500'], sc);
+      set(['--glow-2'], sc && mix(sc, 'transparent', 88));
+      const gd = g('gold');
+      set(['--color-accent-gold', '--color-accent-amber', '--color-amber-500', '--color-amber-400'], gd);
+      const t = g('text');
+      set(['--text', '--color-text'], t);
+      set(['--muted', '--color-muted', '--color-slate-400', '--color-slate-500'], g('muted'));
+      const b = g('border');
+      set(['--border', '--color-border'], b && mix(b, 'transparent', 86));
+      set(['--border-solid', '--border-2', '--color-border-2'], b && mix(b, 'transparent', 70));
+      const bt = g('button');
+      set(['--btn'], bt);
+      document.documentElement.classList.toggle('cc-btn', !!bt);
+    };
+    try {
+      const c = JSON.parse(localStorage.getItem('theme-custom') || 'null');
+      if (c && typeof c === 'object') window.applyThemeColors(c);
+    } catch (e) {}
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content={description} />

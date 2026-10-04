@@ -93,6 +93,34 @@
     opacity: 0 !important;
   }
 
+  /* ── Blindaje de estilos frente a reglas globales `button {}` de otras páginas (ej. gyms-farm y breeding) ── */
+  #lang-selector-container #lang-menu-btn {
+    padding: 0.375rem 0.625rem !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+    font-weight: 700 !important;
+    box-sizing: border-box !important;
+  }
+  #lang-selector-container #lang-menu-btn:hover {
+    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+  #lang-selector-container .lang-opt-btn {
+    padding: 0.5rem !important;
+    border-radius: 0.75rem !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    font-weight: 400 !important;
+    box-sizing: border-box !important;
+  }
+  #lang-selector-container .lang-opt-btn:hover {
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
   body {
     top: 0px !important;
     position: static !important;
